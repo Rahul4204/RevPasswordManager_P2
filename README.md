@@ -78,14 +78,106 @@ docker build -t revpassmanager:latest .
 docker run -p 8080:8080 revpassmanager:latest
 ```
 
-## REST API Documentation
+## REST API Postman Testing Guide
 
-Once running, you can interface directly with the REST layer via Postman or cURL. 
-* To get a token, send a **POST** to `/api/auth/login` providing a JSON body with `usernameOrEmail` and `masterPassword`.
-* Store the returned `token` string. 
-* Pass this token on all subsequent requests to `/api/vault` or `/api/generator` using an HTTP Request Header constraint: `Authorization: Bearer <token_string>` 
+You can interface directly with the REST layer via Postman or cURL. The API uses a stateless JWT Bearer token authentication mechanism.
+
+BASE URL: `http://localhost:8080`
+
+### 1. Authentication (`/api/auth`)
+
+**A. Register a New User**
+* **Method:** `POST`
+* **URL:** `/api/auth/register`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw JSON):**
+  ```json
+  {
+    "username": "api_user",
+    "email": "api@example.com",
+    "fullName": "API User",
+    "masterPassword": "SecurePassword123!",
+    "confirmPassword": "SecurePassword123!",
+    "securityQuestions": [
+      { "questionText": "First pet?", "answer": "dog" },
+      { "questionText": "Favorite color?", "answer": "blue" },
+      { "questionText": "Mother's maiden name?", "answer": "smith" }
+    ]
+  }
+  ```
+
+**B. Login & Get JWT Token**
+* **Method:** `POST`
+* **URL:** `/api/auth/login`
+* **Headers:** `Content-Type: application/json`
+* **Body (raw JSON):**
+  ```json
+  {
+    "usernameOrEmail": "api_user",
+    "masterPassword": "SecurePassword123!"
+  }
+  ```
+* **Note:** Save the `token` string returned in the response. For all the following requests, add an Authorization header: `Authorization: Bearer <your_token>`
+
+---
+
+### 2. Vault Management (`/api/vault`)
+*(Requires Authorization Header)*
+
+**A. Get All Vault Entries**
+* **Method:** `GET`
+* **URL:** `/api/vault`
+* **Optional Query Params:** `?search=github & category=WORK & sort=name`
+
+**B. Add a New Vault Entry**
+* **Method:** `POST`
+* **URL:** `/api/vault`
+* **Body (raw JSON):**
+  ```json
+  {
+    "accountName": "Github",
+    "url": "https://github.com",
+    "username": "api_user",
+    "password": "MySuperSecretPassword",
+    "category": "WORK",
+    "notes": "My primary Github account"
+  }
+  ```
+
+**C. Update an Existing Vault Entry**
+* **Method:** `PUT`
+* **URL:** `/api/vault/{id}`
+* **Body:** (Same structure as Add Entry, but passing updated fields)
+
+**D. Delete a Vault Entry**
+* **Method:** `DELETE`
+* **URL:** `/api/vault/{id}`
+
+**E. Toggle Favorite Status**
+* **Method:** `POST`
+* **URL:** `/api/vault/{id}/favorite`
+
+---
+
+### 3. Password Generator (`/api/generator`)
+*(Requires Authorization Header)*
+
+**A. Generate Secure Passwords**
+* **Method:** `POST`
+* **URL:** `/api/generator/generate`
+* **Body (raw JSON):**
+  ```json
+  {
+    "length": 16,
+    "includeUppercase": true,
+    "includeLowercase": true,
+    "includeDigits": true,
+    "includeSymbols": true,
+    "excludeSimilar": false,
+    "count": 5
+  }
+  ```
 
 *(A helpful testing script `test-api.ps1` is provided in the project root if you operate on Windows)*.
 
----
-**Disclaimer:** This is an academic/portfolio implementation. In a production environment, HTTPS/TLS should be heavily strictly enforced prior to transmission of raw credentials natively.
+

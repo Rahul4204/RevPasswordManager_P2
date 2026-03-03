@@ -152,3 +152,4 @@ HELP.md
 *.tmp
 full_project_code.md
 PROJECT_EXPLANATION.md
+application.properties
