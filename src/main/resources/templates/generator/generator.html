@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Password Generator')}"></head>
+
+<body data-page="generator">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='generator'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('🎲 Password Generator')}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <div
+                    style="display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:flex-start;flex-wrap:wrap;">
+
+                    <!-- Config Panel -->
+                    <div class="card fade-in">
+                        <div class="card-title" style="margin-bottom:16px;">⚙️ Configuration</div>
+                        <form method="post" th:action="@{/generator}" th:object="${config}" id="genForm">
+
+
+                            <div class="form-group">
+                                <label class="form-label">Length: <span id="lenLabel"
+                                        th:text="*{length}">16</span></label>
+                                <input type="range" th:field="*{length}" min="8" max="128" value="16"
+                                    oninput="document.getElementById('lenLabel').textContent=this.value" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Count</label>
+                                <input type="number" class="form-control" th:field="*{count}" min="1" max="10" />
+                            </div>
+
+                            <div style="margin-bottom:14px;">
+                                <label class="form-label">Character Sets</label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{includeUppercase}" />
+                                    <span class="toggle-label">Uppercase (A-Z)</span>
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{includeNumbers}" />
+                                    <span class="toggle-label">Numbers (0-9)</span>
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{includeSymbols}" />
+                                    <span class="toggle-label">Symbols (!@#$…)</span>
+                                </label>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" th:field="*{excludeSimilar}" />
+                                    <span class="toggle-label">Exclude Similar (0Oo1Il)</span>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-full" style="justify-content:center;">
+                                🎲 Generate Passwords
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="card fade-in">
+                        <div class="card-title" style="margin-bottom:16px;">🔑 Generated Passwords</div>
+
+                        <div th:if="${results == null or results.empty}"
+                            style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                            <div style="font-size:40px;margin-bottom:8px;">🎲</div>
+                            <p>Configure options and click Generate to create passwords.</p>
+                        </div>
+
+                        <div th:if="${results != null and !results.empty}">
+                            <div th:each="result, stat : ${results}" class="pw-output"
+                                style="margin-bottom:16px; display:flex; flex-direction:column; gap:8px;">
+
+                                <div
+                                    style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:8px;">
+                                    <code class="pw-text" th:id="|pw-${stat.index}|" th:text="${result.password}"
+                                        style="flex:1; overflow-x:auto;">password</code>
+                                    <button class="btn-icon" th:data-pw="${result.password}"
+                                        onclick="copyToClipboard(this.getAttribute('data-pw'))">📋</button>
+                                </div>
+
+                                <!-- Strength Bar -->
+                                <div style="width:100%;">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill" th:classappend="|strength-${result.score}|">
+                                        </div>
+                                    </div>
+                                    <div class="strength-label"
+                                        th:classappend="(${result.score == 1} ? 's-weak' : (${result.score == 2} ? 's-medium' : (${result.score == 3} ? 's-strong' : 's-vstrong')))"
+                                        th:text="${result.label}">Strength</div>
+                                </div>
+
+                                <!-- Save to Vault -->
+                                <details style="width:100%;">
+                                    <summary
+                                        style="font-size:12px; color:var(--accent-light); cursor:pointer; user-select:none;">
+                                        💾 Save to Vault
+                                    </summary>
+                                    <form method="post" th:action="@{/generator/save}"
+                                        style="margin-top:10px; display:grid; gap:8px;">
+                                        <input type="hidden" name="password" th:value="${result.password}" />
+                                        <input type="text" name="accountName" class="form-control"
+                                            placeholder="Account name (e.g. Gmail)" required />
+                                        <div class="input-group">
+                                            <input type="password" th:id="|saveMp-${stat.index}|" name="masterPassword"
+                                                class="form-control" placeholder="Master password" required />
+                                            <button type="button" class="toggle-pw"
+                                                th:data-target="'saveMp-' + ${stat.index}"
+                                                onclick="togglePw(this.getAttribute('data-target'), this)">👁️</button>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                    </form>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    <script>
+        function togglePw(id, btn) {
+            const i = document.getElementById(id);
+            i.type = i.type === 'password' ? 'text' : 'password';
+            btn.textContent = i.type === 'password' ? '👁️' : '🙈';
+        }
+    </script>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

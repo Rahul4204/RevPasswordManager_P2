@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Delete Account')}"></head>
+
+<body>
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='profile'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('🚨 Delete Account')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <div style="max-width: 480px; margin: 0 auto;" class="fade-in mt-4">
+                    <div class="card" style="border-color: rgba(239, 68, 68, 0.5);">
+                        <div class="card-title" style="color: var(--danger); text-align: center; font-size: 24px;">
+                            Confirm Deletion</div>
+
+                        <div class="alert alert-danger mb-4" style="margin-top: 16px;">
+                            ⚠️ <strong>Warning:</strong> This action is permanent. All your saved passwords, secure
+                            notes, and personal data will be unrecoverable.
+                        </div>
+
+                        <form method="post" th:action="@{/profile/delete}">
+
+                            <div class="form-group">
+                                <label class="form-label text-muted">Please enter your Master Password to confirm that
+                                    you want to permanently delete your account.</label>
+                                <input type="password" class="form-control" name="masterPassword"
+                                    placeholder="Master Password" required autofocus />
+                            </div>
+
+                            <div style="display: flex; gap: 10px; margin-top: 24px;">
+                                <button type="submit" class="btn btn-danger" style="flex: 1;">Delete Everything</button>
+                                <a href="/profile" class="btn btn-secondary"
+                                    style="flex: 1; text-align:center;">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

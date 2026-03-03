@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Security Audit')}"></head>
+
+<body data-page="audit">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='audit'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('🛡️ Security Audit')}" th:with="user=${user}"></div>
+            <div class="page-body">
+
+                <!-- Summary Scores -->
+                <div class="stats-grid fade-in">
+                    <div class="stat-card">
+                        <div class="stat-icon red">⚠️</div>
+                        <div>
+                            <div class="stat-value" th:text="${report.weakPasswords.size()}">0</div>
+                            <div class="stat-label">Weak Passwords</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">🔁</div>
+                        <div>
+                            <div class="stat-value" th:text="${report.reusedPasswords.size()}">0</div>
+                            <div class="stat-label">Reused Passwords</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">🕐</div>
+                        <div>
+                            <div class="stat-value" th:text="${report.oldPasswords.size()}">0</div>
+                            <div class="stat-label">Old Passwords</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div>
+                            <div class="stat-value" th:text="${report.securityScore}">100</div>
+                            <div class="stat-label">Security Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Banner -->
+                <div class="card fade-in mb-4" style="margin-bottom:16px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                        <span class="fw-600">Overall Security Score</span>
+                        <span th:text="${report.securityScore} + '/100'"
+                            th:style="'color:' + (${report.securityScore} >= 80 ? '#22c55e' : (${report.securityScore} >= 50 ? '#f59e0b' : '#ef4444'))"
+                            style="font-size:18px;font-weight:700;">100</span>
+                    </div>
+                    <progress th:value="${report.securityScore}" max="100"
+                        style="width:100%;height:8px;border-radius:4px;"
+                        th:style="'accent-color:' + (${report.securityScore} >= 80 ? '#22c55e' : (${report.securityScore} >= 50 ? '#f59e0b' : '#ef4444'))">
+                    </progress>
+                </div>
+
+                <!-- Weak Passwords -->
+                <div class="card fade-in mb-4" style="margin-bottom:16px;">
+                    <div class="card-header">
+                        <div class="card-title">⚠️ Weak Passwords</div>
+                        <span class="badge badge-red" th:text="${report.weakPasswords.size()}">0</span>
+                    </div>
+                    <div th:if="${report.weakPasswords.empty}"
+                        style="color:var(--text-muted);font-size:13px;padding:8px 0;">
+                        🎉 No weak passwords found!
+                    </div>
+                    <div class="table-wrapper" th:unless="${report.weakPasswords.empty}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Category</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${report.weakPasswords}">
+                                    <td class="fw-600" th:text="${e.accountName}">Account</td>
+                                    <td><span class="badge badge-purple" th:text="${e.category}"></span></td>
+                                    <td><a th:href="@{/vault/{id}/edit(id=${e.id})}"
+                                            class="btn btn-secondary btn-sm">Fix →</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reused Passwords -->
+                <div class="card fade-in mb-4" style="margin-bottom:16px;">
+                    <div class="card-header">
+                        <div class="card-title">🔁 Reused Passwords</div>
+                        <span class="badge badge-yellow" th:text="${report.reusedPasswords.size()}">0</span>
+                    </div>
+                    <div th:if="${report.reusedPasswords.empty}"
+                        style="color:var(--text-muted);font-size:13px;padding:8px 0;">
+                        🎉 No reused passwords detected!
+                    </div>
+                    <div class="table-wrapper" th:unless="${report.reusedPasswords.empty}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Category</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${report.reusedPasswords}">
+                                    <td class="fw-600" th:text="${e.accountName}">Account</td>
+                                    <td><span class="badge badge-purple" th:text="${e.category}"></span></td>
+                                    <td><a th:href="@{/vault/{id}/edit(id=${e.id})}"
+                                            class="btn btn-secondary btn-sm">Fix →</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Old Passwords -->
+                <div class="card fade-in">
+                    <div class="card-header">
+                        <div class="card-title">🕐 Old Passwords</div>
+                        <span class="badge badge-gray" th:text="${report.oldPasswords.size()}">0</span>
+                    </div>
+                    <div th:if="${report.oldPasswords.empty}"
+                        style="color:var(--text-muted);font-size:13px;padding:8px 0;">
+                        🎉 All passwords are recently updated!
+                    </div>
+                    <div class="table-wrapper" th:unless="${report.oldPasswords.empty}">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Last Modified</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="e : ${report.oldPasswords}">
+                                    <td class="fw-600" th:text="${e.accountName}">Account</td>
+                                    <td class="text-muted text-sm" th:text="${e.updatedAt}"></td>
+                                    <td><a th:href="@{/vault/{id}/edit(id=${e.id})}"
+                                            class="btn btn-secondary btn-sm">Update →</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="RevLock – A secure, open-source password manager featuring AES-256 encryption, a built-in password generator, and a clean modern interface. Keep your digital life protected." />
+    <title>RevLock | Secure Password Manager</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <style>
+        /* ── Landing-page-only styles ─────────────────── */
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 110px 24px 70px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 122, 255, 0.12);
+            border: 1px solid rgba(0, 122, 255, 0.25);
+            color: var(--accent-dark);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            letter-spacing: 0.3px;
+        }
+
+        .hero-title {
+            font-size: clamp(38px, 6vw, 60px);
+            font-weight: 700;
+            margin-bottom: 22px;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent), #5ac8fa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 19px;
+            color: var(--text-secondary);
+            margin-bottom: 44px;
+            font-weight: 400;
+            max-width: 620px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .hero-cta .btn-primary {
+            padding: 16px 40px;
+            font-size: 17px;
+            box-shadow: 0 6px 24px var(--accent-glow);
+        }
+
+        .hero-cta .btn-secondary {
+            padding: 16px 40px;
+            font-size: 17px;
+        }
+
+        /* Trust bar */
+        .trust-bar {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 24px 40px;
+            padding: 20px 24px 0;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .trust-item span.dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            flex-shrink: 0;
+        }
+
+        /* ── Section titles ── */
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.2);
+            color: var(--accent-dark);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 100px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ── About / Project Info ── */
+        .about-section {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 80px 24px;
+        }
+
+        .about-inner {
+            max-width: 1060px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        @media (max-width: 720px) {
+            .about-inner {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        .about-text h2 {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .about-text p {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .about-stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .about-stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -1px;
+        }
+
+        .about-stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ── Features ── */
+        .features-section {
+            padding: 90px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 36px 28px;
+            box-shadow: var(--shadow);
+            text-align: left;
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1), 0 0 20px var(--accent-glow);
+        }
+
+        .feature-icon-wrap {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 22px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+
+        /* ── How it works ── */
+        .how-section {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 90px 24px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 36px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            text-align: center;
+        }
+
+        .step-number {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            box-shadow: 0 6px 20px var(--accent-glow);
+        }
+
+        .step-item h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .step-item p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* ── Tech Stack ── */
+        .tech-section {
+            padding: 80px 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tech-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: center;
+        }
+
+        .tech-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
+            transition: transform var(--transition);
+        }
+
+        .tech-chip:hover {
+            transform: scale(1.05);
+        }
+
+        .tech-chip-icon {
+            font-size: 20px;
+        }
+
+        /* ── CTA Banner ── */
+        .cta-section {
+            padding: 100px 24px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-top: 1px solid var(--border);
+        }
+
+        .cta-inner {
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .cta-inner h2 {
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-inner p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-buttons .btn-primary {
+            padding: 18px 48px;
+            font-size: 18px;
+            box-shadow: 0 8px 28px var(--accent-glow);
+        }
+
+        .cta-buttons .btn-secondary {
+            padding: 18px 48px;
+            font-size: 18px;
+        }
+
+        /* ── Footer ── */
+        .landing-footer {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            margin-top: 24px;
+            display: flex;
+            gap: 28px;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Animations ── */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: fadeUp 0.7s ease forwards;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <header class="topbar" style="position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.7);">
+        <div class="sidebar-brand" style="padding: 0; border: none; text-decoration: none;" th:href="@{/}">
+            <div class="brand-icon" style="background: transparent; box-shadow: none;">
+                <img src="/images/logo.png" style="width:100%; height:100%; object-fit:contain;" alt="RevLock Logo" />
+            </div>
+            <span class="brand-name">RevLock</span>
+        </div>
+
+        <nav style="display:flex; align-items:center; gap:8px;">
+            <a href="#features" class="btn btn-secondary btn-sm">Features</a>
+            <a href="#how" class="btn btn-secondary btn-sm">How It Works</a>
+            <a href="/login" class="btn btn-secondary btn-sm" id="nav-login-btn">Sign In</a>
+            <a href="/register" class="btn btn-primary btn-sm" id="nav-register-btn"
+                style="box-shadow: 0 4px 14px var(--accent-glow);">Create Account</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <!-- ══════════════ HERO ══════════════ -->
+        <section class="hero fade-in">
+            <div class="hero-badge">🔐 &nbsp; Open-Source · Spring Boot · AES-256</div>
+
+            <h1 class="hero-title">Your Digital Life,<br />Beautifully Secured.</h1>
+
+            <p class="hero-subtitle">
+                RevLock is a full-stack password manager that stores and encrypts your credentials
+                with military-grade AES-256 encryption — delivered through a clean, modern web interface built for
+                everyone.
+            </p>
+
+            <div class="hero-cta">
+                <a href="/register" class="btn btn-primary" id="hero-create-btn">Get Started Free</a>
+                <a href="/login" class="btn btn-secondary" id="hero-login-btn">Sign In to Your Vault</a>
+            </div>
+
+            <div class="trust-bar">
+                <span class="trust-item"><span class="dot"></span>AES-256 Encryption</span>
+                <span class="trust-item"><span class="dot"></span>BCrypt Password Hashing</span>
+                <span class="trust-item"><span class="dot"></span>Spring Security Sessions</span>
+                <span class="trust-item"><span class="dot"></span>100% Open Source</span>
+            </div>
+        </section>
+
+        <!-- ══════════════ ABOUT / PROJECT INFO ══════════════ -->
+        <section class="about-section">
+            <div class="about-inner">
+                <div class="about-text">
+                    <span class="section-label">About The Project</span>
+                    <h2>What is RevLock?</h2>
+                    <p>
+                        RevLock (RevPasswordManager P2) is a secure, web-based password vault built as a
+                        full-stack Java project. It allows authenticated users to store, manage, and retrieve
+                        their credentials for various websites and services — all encrypted at rest.
+                    </p>
+                    <p>
+                        The application is powered by <strong>Spring Boot</strong> on the backend with
+                        <strong>Spring Security</strong> handling authentication and session management.
+                        Credentials are encrypted using <strong>AES-256</strong> before being persisted to
+                        a relational database via <strong>Spring Data JPA</strong>.
+                    </p>
+                    <p>
+                        The frontend uses <strong>Thymeleaf</strong> server-side templating with a clean,
+                        responsive design system built with modern CSS and smooth micro-animations.
+                    </p>
+                </div>
+                <div class="about-stats">
+                    <div class="about-stat-card">
+                        <div class="about-stat-number">256</div>
+                        <div class="about-stat-label">AES Key Bits</div>
+                    </div>
+                    <div class="about-stat-card">
+                        <div class="about-stat-number">BCrypt</div>
+                        <div class="about-stat-label">Password Hashing</div>
+                    </div>
+                    <div class="about-stat-card">
+                        <div class="about-stat-number">REST</div>
+                        <div class="about-stat-label">API Architecture</div>
+                    </div>
+                    <div class="about-stat-card">
+                        <div class="about-stat-number">JUnit 5</div>
+                        <div class="about-stat-label">Test Suite</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ FEATURES ══════════════ -->
+        <section id="features" class="features-section">
+            <div class="section-header">
+                <span class="section-label">Features</span>
+                <h2 class="section-title">Everything You Need to Stay Secure</h2>
+                <p class="section-desc">
+                    RevLock packs a comprehensive set of security and usability features — engineered for
+                    developers and everyday users alike.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in" style="animation-delay: 0.05s;">
+                    <div class="feature-icon-wrap">🔐</div>
+                    <h3>AES-256 Encryption</h3>
+                    <p>Every password stored in your vault is encrypted using AES-256-GCM before it ever touches the
+                        database. Your master credentials are never stored in plain text.</p>
+                </div>
+
+                <div class="feature-card fade-in" style="animation-delay: 0.1s;">
+                    <div class="feature-icon-wrap">🛡️</div>
+                    <h3>Spring Security Auth</h3>
+                    <p>Session-based authentication with Spring Security. Passwords are hashed with BCrypt and
+                        brute-force protection keeps your account safe from automated attacks.</p>
+                </div>
+
+                <div class="feature-card fade-in" style="animation-delay: 0.15s;">
+                    <div class="feature-icon-wrap">🎲</div>
+                    <h3>Password Generator</h3>
+                    <p>Generate cryptographically strong passwords with customisable length, uppercase, lowercase,
+                        numbers, and special character options in one click.</p>
+                </div>
+
+                <div class="feature-card fade-in" style="animation-delay: 0.2s;">
+                    <div class="feature-icon-wrap">🗄️</div>
+                    <h3>Vault Management</h3>
+                    <p>Organise all your credentials in a clean, searchable vault. Add, edit, copy, or delete entries
+                        for websites, apps, and services at any time.</p>
+                </div>
+
+                <div class="feature-card fade-in" style="animation-delay: 0.25s;">
+                    <div class="feature-icon-wrap">👤</div>
+                    <h3>User Profiles</h3>
+                    <p>Manage your account details, update your master password, and control your security preferences
+                        from a personalised profile dashboard.</p>
+                </div>
+
+                <div class="feature-card fade-in" style="animation-delay: 0.3s;">
+                    <div class="feature-icon-wrap">✨</div>
+                    <h3>Modern Responsive UI</h3>
+                    <p>A polished, fully responsive interface with smooth animations and a clean design system —
+                        optimised
+                        for a great experience on desktop, tablet, and mobile.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ HOW IT WORKS ══════════════ -->
+        <section id="how" class="how-section">
+            <div class="section-header">
+                <span class="section-label">How It Works</span>
+                <h2 class="section-title">Simple, Secure, Seamless</h2>
+                <p class="section-desc">Get your vault set up in minutes and access your credentials from anywhere.</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-item fade-in" style="animation-delay: 0.05s;">
+                    <div class="step-number">1</div>
+                    <h4>Create an Account</h4>
+                    <p>Register with your email and a strong master password. Your identity is protected with BCrypt
+                        hashing from the very first step.</p>
+                </div>
+                <div class="step-item fade-in" style="animation-delay: 0.12s;">
+                    <div class="step-number">2</div>
+                    <h4>Add Your Credentials</h4>
+                    <p>Save passwords for websites and apps directly into your encrypted vault. Use the built-in
+                        generator to create strong new ones instantly.</p>
+                </div>
+                <div class="step-item fade-in" style="animation-delay: 0.19s;">
+                    <div class="step-number">3</div>
+                    <h4>Access Anywhere</h4>
+                    <p>Sign in from any browser. Your vault is always up to date, fully encrypted on the server, and
+                        only decrypted in your authenticated session.</p>
+                </div>
+                <div class="step-item fade-in" style="animation-delay: 0.26s;">
+                    <div class="step-number">4</div>
+                    <h4>Stay in Control</h4>
+                    <p>Update, delete, or copy credentials at any time. Manage your profile and security settings
+                        from one unified dashboard.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ TECH STACK ══════════════ -->
+        <section class="tech-section">
+            <div class="section-header">
+                <span class="section-label">Tech Stack</span>
+                <h2 class="section-title">Built with Production-Grade Technologies</h2>
+                <p class="section-desc">
+                    RevLock is a real-world Spring Boot project — built and tested with industry-standard frameworks.
+                </p>
+            </div>
+
+            <div class="tech-chips">
+                <div class="tech-chip"><span class="tech-chip-icon">☕</span>Java 17</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🌱</span>Spring Boot 3</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🔒</span>Spring Security</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🗃️</span>Spring Data JPA</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🗄️</span>Oracle SQL</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🍃</span>Thymeleaf</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🔑</span>AES-256 Encryption</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🧪</span>JUnit 5 + Mockito</div>
+                <div class="tech-chip"><span class="tech-chip-icon">📦</span>Maven</div>
+                <div class="tech-chip"><span class="tech-chip-icon">🐳</span>Docker Ready</div>
+            </div>
+        </section>
+
+        <!-- ══════════════ CTA BANNER ══════════════ -->
+        <section class="cta-section">
+            <div class="cta-inner">
+                <span class="section-label">Get Started Today</span>
+                <h2>Ready to Secure Your Passwords?</h2>
+                <p>
+                    Create your free RevLock account in seconds and start storing your
+                    credentials safely. Already have an account? Sign back in.
+                </p>
+                <div class="cta-buttons">
+                    <a href="/register" class="btn btn-primary" id="cta-register-btn">Create Free Account</a>
+                    <a href="/login" class="btn btn-secondary" id="cta-login-btn">Sign In</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer class="landing-footer">
+        <div class="footer-brand">
+            <div style="width:26px; height:26px;">
+                <img src="/images/logo.png" style="width:100%; height:100%; object-fit:contain;" alt="Logo" />
+            </div>
+            <span
+                style="font-weight:700; color:var(--text-primary); font-size:16px; letter-spacing:-0.5px;">RevLock</span>
+        </div>
+        <p style="font-size:13px;">© 2026 RevLock Password Manager &mdash; All rights reserved.</p>
+        <p style="font-size:12px; margin-top:6px; color:var(--text-muted);">
+            Built with Spring Boot · Secured with AES-256 · Designed for everyone.
+        </p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Help Center</a>
+            <a href="#">Contact Us</a>
+            <a href="/login">Sign In</a>
+            <a href="/register">Register</a>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll-triggered fade-ins
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    </script>
+
+</body>
+
+</html>

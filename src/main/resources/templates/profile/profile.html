@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Profile')}"></head>
+
+<body data-page="profile">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='profile'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('👤 Profile')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+                <div th:if="${errorMsg}" class="alert alert-danger">❌ <span th:text="${errorMsg}"></span></div>
+
+                <div style="max-width:540px; margin:0 auto;" class="fade-in">
+                    <!-- Avatar Banner -->
+                    <div class="card mb-4" style="margin-bottom:16px;text-align:center;padding:28px;">
+                        <div class="user-avatar"
+                            style="width:72px;height:72px;font-size:28px;margin:0 auto 12px;overflow:hidden;">
+                            <img th:if="${user.profilePhotoUrl != null}" th:src="${user.profilePhotoUrl}"
+                                style="width: 100%; height: 100%; object-fit: cover;" alt="Profile Photo" />
+                            <span th:unless="${user.profilePhotoUrl != null}"
+                                th:text="${#strings.substring(user.fullName ?: user.username, 0, 1)}">U</span>
+                        </div>
+                        <form th:if="${user.profilePhotoUrl != null}" method="post" th:action="@{/profile/remove-photo}"
+                            style="margin-bottom:12px;">
+                            <button type="submit" class="btn btn-secondary btn-sm"
+                                style="color:var(--danger); border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.05);">🗑️
+                                Remove Photo</button>
+                        </form>
+                        <div style="font-size:18px;font-weight:700;" th:text="${user.fullName ?: user.username}">User
+                        </div>
+                        <div class="text-muted text-sm mt-1" th:text="${user.email}">email</div>
+                        <div class="mt-2">
+                            <span class="badge badge-purple">@<span th:text="${user.username}">username</span></span>
+                            <span th:if="${user.totpEnabled}" class="badge badge-green" style="margin-left:4px;">2FA
+                                Enabled</span>
+                        </div>
+                    </div>
+
+                    <!-- Profile Form -->
+                    <div class="card">
+                        <div class="card-title" style="margin-bottom:16px;">✏️ Edit Profile</div>
+                        <form method="post" th:action="@{/profile}" th:object="${profileDTO}"
+                            enctype="multipart/form-data">
+
+                            <div class="form-group">
+                                <label class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control" th:field="*{profilePhoto}" accept="image/*" />
+                                <div class="text-danger text-sm" th:if="${#fields.hasErrors('profilePhoto')}"
+                                    th:errors="*{profilePhoto}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" th:field="*{fullName}"
+                                    placeholder="Your full name" />
+                                <div class="text-danger text-sm" th:if="${#fields.hasErrors('fullName')}"
+                                    th:errors="*{fullName}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" th:field="*{email}"
+                                    placeholder="your@email.com" />
+                                <div class="text-danger text-sm" th:if="${#fields.hasErrors('email')}"
+                                    th:errors="*{email}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-control" th:field="*{phone}"
+                                    placeholder="+91 98765 43210" />
+                            </div>
+
+                            <div style="display:flex;gap:10px;margin-top:20px;">
+                                <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                                <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="card mt-4" style="margin-top:16px;border-color:rgba(239,68,68,0.3);">
+                        <div class="card-title" style="color:var(--danger);margin-bottom:12px;">⚠️ Security Actions
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                            <a href="/security/change-password" class="btn btn-secondary btn-sm">🔑 Change Password</a>
+                            <a href="/security/2fa" class="btn btn-secondary btn-sm">📱 Manage 2FA</a>
+                            <a href="/security/questions" class="btn btn-secondary btn-sm">❓ Security Questions</a>
+                        </div>
+                    </div>
+
+                    <!-- Account Deletion -->
+                    <div class="card mt-4"
+                        style="margin-top:16px;border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.05);">
+                        <div class="card-title" style="color:var(--danger);margin-bottom:12px;">🚨 Danger Zone</div>
+                        <a href="/profile/delete" class="btn btn-danger w-full">🗑️ Delete Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

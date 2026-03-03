@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Confirm New Email')}"></head>
+
+<body>
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='profile'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('✉️ Confirm New Email')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+                <div style="max-width:480px;" class="fade-in">
+                    <div class="card">
+                        <div style="text-align:center;margin-bottom:24px;">
+                            <div style="font-size:48px;">📧</div>
+                            <h2 class="card-title" style="margin-top:12px;">Verify New Email Address</h2>
+                            <p class="text-muted text-sm" style="margin-top:6px;">
+                                A 6-digit code has been sent to
+                                <strong th:text="${pendingEmail}"
+                                    style="color:var(--accent);">new@example.com</strong>.<br />
+                                Enter it below to update your email.
+                            </p>
+                        </div>
+
+                        <form method="post" th:action="@{/profile/verify-email}">
+                            <div class="form-group">
+                                <label class="form-label">Verification Code</label>
+                                <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit code"
+                                    maxlength="6" style="font-size:24px;letter-spacing:8px;text-align:center;"
+                                    autocomplete="one-time-code" required autofocus />
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">
+                                ✅ Confirm Email Change
+                            </button>
+                        </form>
+
+                        <div style="text-align:center;margin-top:16px;">
+                            <a href="/profile" class="text-muted text-sm">← Cancel &amp; go back to profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

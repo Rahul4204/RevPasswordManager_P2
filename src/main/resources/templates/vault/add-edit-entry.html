@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head(${isEdit} ? 'Edit Entry' : 'Add Password')}"></head>
+
+<body data-page="add-entry">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='vault'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar(${isEdit} ? 'Edit Entry' : 'Add New Password')}" th:with="user=${user}">
+            </div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+                <div th:if="${errorMsg}" class="alert alert-danger">❌ <span th:text="${errorMsg}"></span></div>
+
+                <div style="max-width:620px; margin:0 auto;" class="fade-in">
+                    <form method="post" th:action="${isEdit} ? @{/vault/{id}/edit(id=${entryDTO.id})} : @{/vault/add}"
+                        th:object="${entryDTO}">
+
+                        <div class="card mb-4" style="margin-bottom:16px;">
+                            <div class="card-title" style="margin-bottom:14px;">📝 Entry Details</div>
+
+                            <div class="form-group">
+                                <label class="form-label">Account Name *</label>
+                                <input type="text" class="form-control" th:field="*{accountName}"
+                                    placeholder="e.g. Gmail, Netflix, Bank of America" />
+                                <div class="text-danger text-sm" th:if="${#fields.hasErrors('accountName')}"
+                                    th:errors="*{accountName}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Website URL</label>
+                                <input type="url" class="form-control" th:field="*{websiteUrl}"
+                                    placeholder="https://example.com" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Username / Email</label>
+                                <input type="text" class="form-control" th:field="*{accountUsername}"
+                                    placeholder="your.email@example.com" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Password *</label>
+                                <div class="input-group">
+                                    <!--
+                                      Edit mode  → type="text"  so the DB value is visible immediately.
+                                      Add mode   → type="password" (blank field, secure by default).
+                                      The toggle button switches between the two in both cases.
+                                    -->
+                                    <input th:type="${isEdit} ? 'text' : 'password'" id="pw" class="form-control"
+                                        th:field="*{password}" placeholder="Enter or generate a password"
+                                        oninput="updateStrength(this.value)" autocomplete="new-password" />
+                                    <button type="button" class="toggle-pw"
+                                        th:onclick="${isEdit} ? 'togglePw(''pw'',this)' : 'togglePw(''pw'',this)'"
+                                        th:text="${isEdit} ? '🙈' : '👁️'"></button>
+                                </div>
+                                <div class="strength-bar mt-1">
+                                    <div id="sf" class="strength-fill"></div>
+                                </div>
+                                <div id="sl" class="strength-label"></div>
+                                <div class="text-danger text-sm" th:if="${#fields.hasErrors('password')}"
+                                    th:errors="*{password}"></div>
+                            </div>
+
+                            <!-- Inline Quick Generator -->
+                            <div
+                                style="background:var(--bg-secondary);border-radius:8px;padding:12px;margin-bottom:12px;">
+                                <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">⚡
+                                    QUICK GENERATE</div>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <input type="range" id="genLen" min="8" max="64" value="16"
+                                        oninput="document.getElementById('lenDisplay').textContent=this.value"
+                                        style="flex:1;" />
+                                    <span id="lenDisplay"
+                                        style="font-size:12px;color:var(--accent-light);min-width:24px;">16</span>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="quickGenerate()">🎲
+                                        Generate</button>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="copyGenBtn"
+                                        style="display:none;"
+                                        onclick="copyToClipboard(document.getElementById('pw').value)">📋</button>
+                                </div>
+                            </div>
+
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                <div class="form-group">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-control" th:field="*{category}">
+                                        <option th:each="cat : ${categories}" th:value="${cat.name()}"
+                                            th:text="${cat.name().replace('_',' ')}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" style="display:flex;align-items:center;gap:8px;">
+                                        Favorite
+                                    </label>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" th:field="*{favorite}" />
+                                        <span class="toggle-label">Mark as favorite ⭐</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Notes</label>
+                                <textarea class="form-control" th:field="*{notes}" rows="3"
+                                    placeholder="Any extra notes about this account..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Master password verification -->
+                        <div class="card mb-4" style="margin-bottom:16px;">
+                            <div class="card-title" style="margin-bottom:12px;">🔑 Confirm with Master Password</div>
+                            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+                                Required to <span th:text="${isEdit} ? 'update' : 'save'">save</span> this entry.
+                            </p>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="password" id="mp" name="masterPassword" class="form-control"
+                                        placeholder="Enter master password" required />
+                                    <button type="button" class="toggle-pw" onclick="togglePw('mp',this)">👁️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:10px;">
+                            <button type="submit" class="btn btn-primary">
+                                <span th:text="${isEdit} ? '💾 Update Entry' : '➕ Add to Vault'">Save</span>
+                            </button>
+                            <a href="/vault" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function togglePw(id, btn) {
+            const i = document.getElementById(id);
+            i.type = i.type === 'password' ? 'text' : 'password';
+            btn.textContent = i.type === 'password' ? '👁️' : '🙈';
+        }
+        function updateStrength(pw) {
+            let s = 0;
+            if (pw.length >= 8) s++; if (pw.length >= 12) s++; if (/[A-Z]/.test(pw)) s++; if (/[0-9]/.test(pw)) s++; if (/[^A-Za-z0-9]/.test(pw)) s++;
+            s = Math.min(Math.floor(s * 4 / 5), 4);
+            const f = document.getElementById('sf'), l = document.getElementById('sl');
+            const w = ['0%', '25%', '50%', '75%', '100%'], c = ['', '#ef4444', '#f59e0b', '#22c55e', '#06b6d4'];
+            const lab = ['', 'Weak', 'Medium', 'Strong', 'Very Strong'], cls = ['', 's-weak', 's-medium', 's-strong', 's-vstrong'];
+            f.style.width = w[s]; f.style.background = c[s]; l.textContent = lab[s]; l.className = 'strength-label ' + cls[s];
+        }
+        async function quickGenerate() {
+            const len = document.getElementById('genLen').value;
+            const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*';
+            let pw = '';
+            const arr = new Uint32Array(parseInt(len));
+            crypto.getRandomValues(arr);
+            arr.forEach(v => pw += chars[v % chars.length]);
+            const input = document.getElementById('pw');
+            input.value = pw;
+            input.type = 'text';
+            updateStrength(pw);
+            document.getElementById('copyGenBtn').style.display = 'inline-flex';
+        }
+        // On edit page load: show strength of the existing password
+        document.addEventListener('DOMContentLoaded', () => {
+            const pw = document.getElementById('pw');
+            if (pw && pw.value) updateStrength(pw.value);
+        });
+    </script>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>
