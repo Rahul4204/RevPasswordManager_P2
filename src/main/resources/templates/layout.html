@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title} + ' | RevLock'">RevLock</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+</head>
+
+<body>
+    <!-- This file is used as a Thymeleaf th:replace fragment source -->
+    <!-- ===== SIDEBAR FRAGMENT ===== -->
+    <nav class="sidebar" th:fragment="sidebar">
+        <a class="sidebar-brand" href="/dashboard">
+            <div class="brand-icon" style="background:transparent;box-shadow:none;">
+                <img src="/images/logo.png" style="width: 100%; height: 100%; object-fit: contain;"
+                    alt="RevLock Logo" />
+            </div>
+            <span class="brand-name">RevLock</span>
+        </a>
+        <div class="sidebar-nav">
+            <div class="nav-section-title">Main</div>
+            <a class="nav-item" th:classappend="${activePage == 'dashboard'} ? 'active'" href="/dashboard">
+                <span class="nav-icon">📊</span><span>Dashboard</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == 'vault'} ? 'active'" href="/vault">
+                <span class="nav-icon">🗄️</span><span>Password Vault</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == 'favorites'} ? 'active'" href="/vault/favorites">
+                <span class="nav-icon">⭐</span><span>Favorites</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == 'generator'} ? 'active'" href="/generator">
+                <span class="nav-icon">🎲</span><span>Generator</span>
+            </a>
+            <div class="nav-section-title">Security</div>
+            <a class="nav-item" th:classappend="${activePage == 'audit'} ? 'active'" href="/security/audit">
+                <span class="nav-icon">🛡️</span><span>Security Audit</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == '2fa'} ? 'active'" href="/security/2fa">
+                <span class="nav-icon">📱</span><span>Two-Factor Auth</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == 'questions'} ? 'active'" href="/security/questions">
+                <span class="nav-icon">❓</span><span>Security Questions</span>
+            </a>
+            <div class="nav-section-title">Account</div>
+            <a class="nav-item" th:classappend="${activePage == 'profile'} ? 'active'" href="/profile">
+                <span class="nav-icon">👤</span><span>Profile</span>
+            </a>
+            <a class="nav-item" th:classappend="${activePage == 'changepw'} ? 'active'"
+                href="/security/change-password">
+                <span class="nav-icon">🔑</span><span>Change Password</span>
+            </a>
+        </div>
+        <div class="sidebar-footer">
+            <form method="post" action="/logout" th:action="@{/logout}">
+                <button type="submit" class="btn btn-secondary w-full">
+                    <span>🚪</span><span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- ===== TOPBAR FRAGMENT ===== -->
+    <header class="topbar" th:fragment="topbar(title)">
+        <div class="topbar-title" th:text="${title}">Page Title</div>
+        <div class="topbar-meta" style="display:flex; align-items:center; gap:16px;">
+            <div class="user-badge" style="display:flex; align-items:center;">
+                <div class="user-avatar" style="overflow: hidden;">
+                    <img th:if="${user != null and user.profilePhotoUrl != null}" th:src="${user.profilePhotoUrl}"
+                        style="width: 100%; height: 100%; object-fit: cover;" alt="Profile Photo" />
+                    <span th:unless="${user != null and user.profilePhotoUrl != null}"
+                        th:text="${#strings.substring(user != null ? (user.fullName ?: user.username) : 'U', 0, 1)}">U</span>
+                </div>
+                <span th:text="${user != null ? (user.fullName ?: user.username) : ''}">User</span>
+            </div>
+            <button id="sidebar-toggle" aria-label="Toggle Navigation">
+                <span>☰</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== FLASH MESSAGES ===== -->
+    <div th:fragment="flash">
+        <div th:if="${successMsg}" class="alert alert-success fade-in">
+            ✅ <span th:text="${successMsg}"></span>
+        </div>
+        <div th:if="${errorMsg}" class="alert alert-danger fade-in">
+            ❌ <span th:text="${errorMsg}"></span>
+        </div>
+        <div th:if="${warningMsg}" class="alert alert-warning fade-in">
+            ⚠️ <span th:text="${warningMsg}"></span>
+        </div>
+    </div>
+
+    <script th:fragment="scripts">
+        // Auto-dismiss alerts after 5s
+        document.querySelectorAll('.alert').forEach(el => {
+            setTimeout(() => {
+                el.style.transition = 'opacity 0.5s';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 500);
+            }, 5000);
+        });
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-pw').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = btn.previousElementSibling;
+                if (input && (input.type === 'password' || input.type === 'text')) {
+                    input.type = input.type === 'password' ? 'text' : 'password';
+                    btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+                }
+            });
+        });
+
+        // Copy to clipboard helper
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success'));
+        }
+
+        function showToast(msg, type = 'success') {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 400); }, 3000);
+        }
+
+        // Sidebar Toggle Logic
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.toggle('open');
+            });
+
+            // Close sidebar when clicking outside
+            document.addEventListener('click', (e) => {
+                if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== toggleBtn) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Close sidebar when pressing Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

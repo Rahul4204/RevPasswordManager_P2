@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Entry Details')}"></head>
+
+<body data-page="entry-detail">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='vault'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('Entry Details')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+                    <!-- Entry Info Card -->
+                    <div class="card fade-in" style="flex:1;min-width:320px;">
+                        <div class="card-header">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <!-- Category icon -->
+                                <div class="vault-card-icon" th:switch="${entry.category?.name()}"
+                                    style="width:48px;height:48px;font-size:22px;">
+                                    <span th:case="'BANKING'"
+                                        style="background:linear-gradient(135deg,#1e3a5f,#2563eb);">🏦</span>
+                                    <span th:case="'EMAIL'"
+                                        style="background:linear-gradient(135deg,#7c3aed,#a855f7);">📧</span>
+                                    <span th:case="'SOCIAL_MEDIA'"
+                                        style="background:linear-gradient(135deg,#0369a1,#38bdf8);">📱</span>
+                                    <span th:case="'SHOPPING'"
+                                        style="background:linear-gradient(135deg,#b45309,#f59e0b);">🛒</span>
+                                    <span th:case="'WORK'"
+                                        style="background:linear-gradient(135deg,#065f46,#10b981);">💼</span>
+                                    <span th:case="*"
+                                        style="background:linear-gradient(135deg,#374151,#6b7280);">🔑</span>
+                                </div>
+                                <div>
+                                    <div class="card-title" th:text="${entry.accountName}">Account</div>
+                                    <!-- Coloured category badge -->
+                                    <span th:switch="${entry.category?.name()}"
+                                        style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600;">
+                                        <span th:case="'BANKING'" style="background:#1e3a5f22;color:#60a5fa;">🏦
+                                            Banking</span>
+                                        <span th:case="'EMAIL'" style="background:#7c3aed22;color:#c084fc;">📧
+                                            Email</span>
+                                        <span th:case="'SOCIAL_MEDIA'" style="background:#0369a122;color:#38bdf8;">📱
+                                            Social Media</span>
+                                        <span th:case="'SHOPPING'" style="background:#b4530922;color:#f59e0b;">🛒
+                                            Shopping</span>
+                                        <span th:case="'WORK'" style="background:#065f4622;color:#10b981;">💼
+                                            Work</span>
+                                        <span th:case="*" style="background:#37415122;color:#9ca3af;">🔑 Other</span>
+                                    </span>
+                                    <span th:if="${entry.favorite}" class="badge badge-yellow"
+                                        style="margin-left:4px;">⭐ Favorite</span>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <a th:href="@{/vault/{id}/edit(id=${entry.id})}" class="btn btn-secondary btn-sm">✏️
+                                    Edit</a>
+                                <button onclick="document.getElementById('deleteModal').style.display='flex'"
+                                    class="btn btn-danger btn-sm">🗑️ Delete</button>
+                            </div>
+                        </div>
+
+                        <div style="display:grid;gap:12px;margin-top:8px;">
+                            <div>
+                                <div class="form-label">Website URL</div>
+                                <div style="font-size:14px;"
+                                    th:if="${entry.websiteUrl != null and !#strings.isEmpty(entry.websiteUrl)}">
+                                    <a th:href="${entry.websiteUrl}" target="_blank"
+                                        style="color:var(--accent-light);text-decoration:none;"
+                                        th:text="${entry.websiteUrl}">URL</a>
+                                </div>
+                                <div style="color:var(--text-muted);font-size:13px;"
+                                    th:unless="${entry.websiteUrl != null and !#strings.isEmpty(entry.websiteUrl)}">—
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-label">Username / Email</div>
+                                <div style="font-size:14px;display:flex;align-items:center;gap:8px;">
+                                    <span th:text="${entry.accountUsername}">username</span>
+                                    <button class="btn-icon btn-sm" th:if="${entry.accountUsername != null}"
+                                        th:data-username="${entry.accountUsername}"
+                                        onclick="copyToClipboard(this.getAttribute('data-username'))"
+                                        title="Copy">📋</button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-label">Password</div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <code id="pwField"
+                                        style="font-size:15px;letter-spacing:1px;color:var(--accent-light);"
+                                        th:text="${entry.password}">••••••••</code>
+                                    <button th:if="${revealed}" class="btn-icon btn-sm"
+                                        onclick="copyToClipboard(document.getElementById('pwField').textContent)"
+                                        title="Copy">📋</button>
+                                </div>
+                            </div>
+                            <div th:if="${entry.notes != null and !#strings.isEmpty(entry.notes)}">
+                                <div class="form-label">Notes</div>
+                                <div style="font-size:13px;color:var(--text-secondary);white-space:pre-wrap;"
+                                    th:text="${entry.notes}"></div>
+                            </div>
+                            <div
+                                style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+                                <div>
+                                    <div class="form-label">Added</div>
+                                    <div class="text-sm text-muted" th:text="${entry.createdAt}"></div>
+                                </div>
+                                <div>
+                                    <div class="form-label">Last Modified</div>
+                                    <div class="text-sm text-muted" th:text="${entry.updatedAt}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reveal Panel -->
+                    <div th:unless="${revealed}" class="card fade-in" style="width:300px;flex-shrink:0;">
+                        <div class="card-title" style="margin-bottom:12px;">🔒 View Password</div>
+                        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                            Enter your master password to reveal this entry's password.
+                        </p>
+                        <form method="post" th:action="@{/vault/{id}/reveal(id=${entry.id})}">
+                            <div class="form-group">
+                                <label class="form-label">Master Password</label>
+                                <div class="input-group">
+                                    <input type="password" id="mp" name="masterPassword" class="form-control"
+                                        placeholder="Enter master password" required autofocus />
+                                    <button type="button" class="toggle-pw" onclick="togglePw('mp',this)">👁️</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-full" style="justify-content:center;">
+                                🔓 Reveal Password
+                            </button>
+                        </form>
+                    </div>
+                    <div th:if="${revealed}" class="card fade-in" style="width:300px;flex-shrink:0;">
+                        <div class="card-title" style="margin-bottom:8px;color:var(--success);">✅ Password Revealed
+                        </div>
+                        <a href="/vault" class="btn btn-secondary w-full" style="justify-content:center;">← Back to
+                            Vault</a>
+                    </div>
+                </div>
+
+                <!-- Delete Modal -->
+                <div id="deleteModal" class="modal-backdrop" style="display:none;">
+                    <div class="modal-box">
+                        <div class="modal-title">🗑️ Delete Entry?</div>
+                        <div class="modal-subtitle">This action cannot be undone. Enter your master password to confirm.
+                        </div>
+                        <form method="post" th:action="@{/vault/{id}/delete(id=${entry.id})}">
+                            <div class="form-group">
+                                <label class="form-label">Master Password</label>
+                                <input type="password" name="masterPassword" class="form-control" required />
+                            </div>
+                            <div style="display:flex;gap:8px;margin-top:16px;">
+                                <button type="submit" class="btn btn-danger" style="flex:1;">Confirm Delete</button>
+                                <button type="button" class="btn btn-secondary" style="flex:1;"
+                                    onclick="document.getElementById('deleteModal').style.display='none'">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function togglePw(id, btn) {
+            const i = document.getElementById(id);
+            i.type = i.type === 'password' ? 'text' : 'password';
+            btn.textContent = i.type === 'password' ? '👁️' : '🙈';
+        }
+    </script>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Favorites')}"></head>
+
+<body data-page="favorites">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='favorites'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('⭐ Favorites')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <div th:if="${entries.empty}" style="text-align:center;padding:60px;color:var(--text-muted);"
+                    class="card fade-in">
+                    <div style="font-size:50px;margin-bottom:12px;">⭐</div>
+                    <p>No favorites yet. Star entries from the vault to see them here.</p>
+                    <a href="/vault" class="btn btn-primary mt-2">Go to Vault</a>
+                </div>
+
+                <div class="vault-grid fade-in" th:unless="${entries.empty}">
+                    <div th:each="entry : ${entries}" style="position:relative;">
+                        <a th:href="@{/vault/{id}(id=${entry.id})}" class="vault-card">
+                            <div class="vault-card-header">
+                                <div class="vault-card-icon">⭐</div>
+                                <span class="badge badge-purple" th:text="${entry.category}"></span>
+                            </div>
+                            <div class="vault-card-name" th:text="${entry.accountName}">Account</div>
+                            <div class="vault-card-url text-muted" th:text="${entry.websiteUrl}"></div>
+                            <div class="vault-card-user" th:text="${entry.accountUsername}"></div>
+                        </a>
+                        <form th:action="@{/vault/{id}/favorite(id=${entry.id})}" method="post"
+                            style="position:absolute;top:12px;right:12px;">
+                            <input type="hidden" name="returnUrl" value="/vault/favorites" />
+                            <button type="submit" class="btn-icon" style="font-size:13px;"
+                                title="Remove from favorites">⭐</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

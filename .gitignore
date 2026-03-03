@@ -1,25 +1,95 @@
-HELP.md
+# ─────────────────────────────────────────────────────────────────────────────
+#  RevLock (RevPasswordManager P2) — .gitignore
+#  Spring Boot 3 · Java 17 · Maven · Oracle SQL · Thymeleaf
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ──────────────────────────────────────────────────────
+# MAVEN BUILD OUTPUT
+# ──────────────────────────────────────────────────────
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
-### STS ###
+
+# ──────────────────────────────────────────────────────
+# SENSITIVE CONFIGURATION — NEVER COMMIT THESE
+# ──────────────────────────────────────────────────────
+# Contains DB passwords, email passwords, encryption secret
+src/main/resources/application.properties
+src/main/resources/application.yml
+src/main/resources/application-prod.properties
+src/main/resources/application-prod.yml
+
+# Allow the template/example config to be committed
+!src/main/resources/application.properties.example
+!src/main/resources/application-example.properties
+
+
+# ──────────────────────────────────────────────────────
+# SPRING BOOT
+# ──────────────────────────────────────────────────────
+spring-shell.log
+*.log
+logs/
+
+
+# ──────────────────────────────────────────────────────
+# JAVA
+# ──────────────────────────────────────────────────────
+*.class
+hs_err_pid*
+replay_pid*
+
+
+# ──────────────────────────────────────────────────────
+# INTELLIJ IDEA
+# ──────────────────────────────────────────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.idea_modules/
+
+
+# ──────────────────────────────────────────────────────
+# ECLIPSE / STS (Spring Tool Suite)
+# ──────────────────────────────────────────────────────
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
+.recommenders/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
 
-### NetBeans ###
+# ──────────────────────────────────────────────────────
+# VS CODE
+# ──────────────────────────────────────────────────────
+.vscode/
+
+
+# ──────────────────────────────────────────────────────
+# NETBEANS
+# ──────────────────────────────────────────────────────
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -29,5 +99,57 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+
+# ──────────────────────────────────────────────────────
+# OPERATING SYSTEM FILES
+# ──────────────────────────────────────────────────────
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+
+# ──────────────────────────────────────────────────────
+# DOCKER
+# ──────────────────────────────────────────────────────
+.dockerignore
+docker-compose.override.yml
+
+
+# ──────────────────────────────────────────────────────
+# JENKINS / CI
+# ──────────────────────────────────────────────────────
+.jenkins/
+
+
+# ──────────────────────────────────────────────────────
+# MISCELLANEOUS / PROJECT-SPECIFIC
+# ──────────────────────────────────────────────────────
+HELP.md
+*.orig
+*.bak
+*.swp
+*.tmp
+full_project_code.md
+PROJECT_EXPLANATION.md
+application.properties

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Password Vault')}"></head>
+
+<body data-page="vault">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='vault'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('Password Vault')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <!-- Filter Bar -->
+                <form method="get" th:action="@{/vault}" class="filter-bar mb-4">
+                    <input type="text" name="search" class="form-control"
+                        placeholder="🔍 Search accounts, websites, usernames..." th:value="${search}"
+                        style="max-width:300px;" />
+                    <select name="sort" class="form-control" style="max-width:160px;" onchange="this.form.submit()">
+                        <option value="name" th:selected="${sort == 'name'}">Sort: Name</option>
+                        <option value="date_added" th:selected="${sort == 'date_added'}">Sort: Date Added</option>
+                        <option value="date_modified" th:selected="${sort == 'date_modified'}">Sort: Modified</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a th:if="${search != null and !#strings.isEmpty(search)}" href="/vault"
+                        class="btn btn-secondary">Clear</a>
+                </form>
+
+                <!-- Category Chips -->
+                <div class="filter-chips mb-4" style="margin-bottom:16px;">
+                    <a th:href="@{/vault(sort=${sort})}" class="filter-chip"
+                        th:classappend="${category == 'ALL'} ? 'active'">All</a>
+                    <a th:each="cat : ${categories}" th:href="@{/vault(category=${cat.name()}, sort=${sort})}"
+                        class="filter-chip" th:classappend="${category == cat.name()} ? 'active'"
+                        th:text="${cat.name().replace('_',' ')}">Category</a>
+                </div>
+
+                <!-- Header Row -->
+                <div class="card-header mb-4" style="margin-bottom:12px;">
+                    <span style="font-size:13px;color:var(--text-secondary);"
+                        th:text="${entries.size()} + ' entries'"></span>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <a href="/vault/add" class="btn btn-primary btn-sm">➕ Add Password</a>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div th:if="${entries.empty}" style="text-align:center;padding:60px 24px;color:var(--text-muted);"
+                    class="card fade-in">
+                    <div style="font-size:50px;margin-bottom:12px;">🔒</div>
+                    <p style="font-size:15px;margin-bottom:8px;">Your vault is empty</p>
+                    <a href="/vault/add" class="btn btn-primary">➕ Add your first password</a>
+                </div>
+
+
+
+                <!-- LIST VIEW -->
+                <div th:if="${!entries.empty}" class="card fade-in">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Website</th>
+                                    <th>Username</th>
+                                    <th>Category</th>
+                                    <th>Modified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="entry : ${entries}">
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:10px;">
+                                            <!-- Category icon circle -->
+                                            <span th:switch="${entry.category?.name()}"
+                                                style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
+                                                <span th:case="'BANKING'" style="background:#1e3a5f33;">🏦</span>
+                                                <span th:case="'EMAIL'" style="background:#7c3aed33;">📧</span>
+                                                <span th:case="'SOCIAL_MEDIA'" style="background:#0369a133;">📱</span>
+                                                <span th:case="'SHOPPING'" style="background:#b4530933;">🛒</span>
+                                                <span th:case="'WORK'" style="background:#065f4633;">💼</span>
+                                                <span th:case="*" style="background:#37415133;">🔑</span>
+                                            </span>
+                                            <span th:if="${entry.favorite}" title="Favorite">⭐</span>
+                                            <span class="fw-600" th:text="${entry.accountName}">Account</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted text-sm" th:text="${entry.websiteUrl}"></td>
+                                    <td class="text-muted text-sm" th:text="${entry.accountUsername}"></td>
+                                    <!-- Coloured category badge -->
+                                    <td>
+                                        <span th:switch="${entry.category?.name()}"
+                                            style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600;">
+                                            <span th:case="'BANKING'" style="background:#1e3a5f22;color:#60a5fa;">🏦
+                                                Banking</span>
+                                            <span th:case="'EMAIL'" style="background:#7c3aed22;color:#c084fc;">📧
+                                                Email</span>
+                                            <span th:case="'SOCIAL_MEDIA'"
+                                                style="background:#0369a122;color:#38bdf8;">📱 Social</span>
+                                            <span th:case="'SHOPPING'" style="background:#b4530922;color:#f59e0b;">🛒
+                                                Shopping</span>
+                                            <span th:case="'WORK'" style="background:#065f4622;color:#10b981;">💼
+                                                Work</span>
+                                            <span th:case="*" style="background:#37415122;color:#9ca3af;">🔑
+                                                Other</span>
+                                        </span>
+                                    </td>
+                                    <td class="text-muted text-sm" th:text="${entry.updatedAt}"></td>
+                                    <td>
+                                        <div style="display:flex;gap:6px;align-items:center;">
+                                            <a th:href="@{/vault/{id}(id=${entry.id})}"
+                                                class="btn btn-secondary btn-sm">View</a>
+                                            <a th:href="@{/vault/{id}/edit(id=${entry.id})}"
+                                                class="btn btn-secondary btn-sm">✏️</a>
+                                            <form th:action="@{/vault/{id}/favorite(id=${entry.id})}" method="post"
+                                                style="display:inline;">
+                                                <input type="hidden" name="returnUrl" value="/vault" />
+                                                <button type="submit" class="btn-icon btn-sm"
+                                                    th:text="${entry.favorite} ? '⭐' : '☆'"></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

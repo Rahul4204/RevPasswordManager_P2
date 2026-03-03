@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | RevLock</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        /* ── Split layout ── */
+        .auth-split {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Left illustration panel */
+        .auth-panel-left {
+            flex: 1;
+            background: linear-gradient(145deg, #0d1117 0%, #161b2e 50%, #1a1140 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-panel-left::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+            top: -80px;
+            left: -80px;
+            border-radius: 50%;
+        }
+
+        .auth-panel-left::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.14) 0%, transparent 70%);
+            bottom: -60px;
+            right: -40px;
+            border-radius: 50%;
+        }
+
+        .auth-panel-left img.auth-illo {
+            width: 100%;
+            max-width: 420px;
+            border-radius: 20px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-panel-tagline {
+            margin-top: 32px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-panel-tagline span {
+            display: block;
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.45);
+            margin-top: 6px;
+        }
+
+        /* Right form panel */
+        .auth-panel-right {
+            width: 460px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary, #0f1117);
+            padding: 48px 40px;
+        }
+
+        .auth-panel-right .auth-card {
+            width: 100%;
+            max-width: 380px;
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        /* Mobile: stack vertically */
+        @media (max-width: 768px) {
+            .auth-split {
+                flex-direction: column;
+            }
+
+            .auth-panel-left {
+                display: none;
+            }
+
+            .auth-panel-right {
+                width: 100%;
+                padding: 32px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="login">
+    <div class="auth-split">
+
+        <!-- ── LEFT: Illustration Panel ── -->
+        <div class="auth-panel-left">
+            <img class="auth-illo" src="/images/auth-illustration.png" alt="Secure Vault Illustration" />
+            <div class="auth-panel-tagline">
+                Your passwords, encrypted &amp; safe.
+                <span>Military-grade AES-256 encryption for every credential.</span>
+            </div>
+        </div>
+
+        <!-- ── RIGHT: Login Form ── -->
+        <div class="auth-panel-right">
+            <div class="auth-card fade-in">
+                <div class="auth-logo">
+                    <div class="logo-icon" style="background:transparent;box-shadow:none;">
+                        <img src="/images/logo.png" style="width:100%;height:100%;object-fit:contain;" alt="Logo" />
+                    </div>
+                    <span class="logo-text">RevLock</span>
+                </div>
+                <h1 class="auth-title">Welcome back</h1>
+                <p class="auth-subtitle">Sign in to your secure vault</p>
+
+                <div th:if="${loginError}" class="alert alert-danger">❌ <span th:text="${loginError}"></span></div>
+                <div th:if="${logoutMsg}" class="alert alert-success">✅ <span th:text="${logoutMsg}"></span></div>
+
+                <form method="post" th:action="@{/login}" autocomplete="on">
+                    <div class="form-group">
+                        <label class="form-label" for="usernameOrEmail">Username or Email</label>
+                        <input id="usernameOrEmail" name="usernameOrEmail" type="text" class="form-control"
+                            placeholder="Enter username or email" autofocus autocomplete="username" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="masterPassword">Master Password</label>
+                        <div class="input-group">
+                            <input id="masterPassword" name="masterPassword" type="password" class="form-control"
+                                placeholder="Enter master password" autocomplete="current-password" required />
+                            <button type="button" class="toggle-pw">👁️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full mt-4" style="justify-content:center;">
+                        🔓 Sign In
+                    </button>
+                </form>
+
+                <div class="mt-4" style="text-align:center;font-size:13px;color:var(--text-secondary);">
+                    <a href="/recover" style="color:var(--accent-light);text-decoration:none;">Forgot master
+                        password?</a>
+                    &nbsp;·&nbsp;
+                    <a href="/register" style="color:var(--accent-light);text-decoration:none;">Create account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.toggle-pw').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById('masterPassword');
+                input.type = input.type === 'password' ? 'text' : 'password';
+                btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+            });
+        });
+    </script>
+</body>
+
+</html>

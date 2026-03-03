@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout :: head('Two-Factor Auth')}"></head>
+
+<body data-page="2fa">
+    <div class="app-wrapper">
+        <div th:replace="~{layout :: sidebar}" th:with="activePage='2fa'"></div>
+        <div class="main-content">
+            <div th:replace="~{layout :: topbar('📱 Two-Factor Authentication')}" th:with="user=${user}"></div>
+            <div class="page-body">
+                <div th:replace="~{layout :: flash}"></div>
+
+                <div style="max-width:520px; margin:0 auto;" class="fade-in">
+                    <!-- Status Card -->
+                    <div class="card mb-4" style="margin-bottom:16px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <div class="card-title">2FA Status</div>
+                                <p class="text-muted text-sm mt-1" style="margin-top:4px;">
+                                    Two-factor authentication adds an extra layer of security to your account.
+                                    When enabled, you will receive a 6-digit code by email on every login.
+                                </p>
+                            </div>
+                            <span th:if="${user.totpEnabled}" class="badge badge-green"
+                                style="font-size:13px;padding:6px 14px;">✅ Enabled</span>
+                            <span th:unless="${user.totpEnabled}" class="badge badge-gray"
+                                style="font-size:13px;padding:6px 14px;">Disabled</span>
+                        </div>
+                    </div>
+
+                    <!-- Enable Card -->
+                    <div class="card mb-4" style="margin-bottom:16px;" th:unless="${user.totpEnabled}">
+                        <div class="card-title" style="margin-bottom:12px;"><span style="margin-right:8px;">🔒</span>
+                            Enable 2FA via Email</div>
+                        <div class="alert alert-info" style="font-size:13px;margin-bottom:16px;">
+                            📧 When you click "Enable", a 6-digit verification code will be sent to
+                            <strong th:text="${user.email}"></strong>. Enter that code to activate 2FA.
+                        </div>
+                        <form method="post" th:action="@{/security/2fa/enable}">
+                            <button type="submit" class="btn btn-primary">📱 Enable Two-Factor Auth</button>
+                        </form>
+                    </div>
+
+                    <!-- 2FA Active Card -->
+                    <div th:if="${user.totpEnabled}" class="card mb-4" style="margin-bottom:16px;">
+                        <div class="card-title" style="margin-bottom:12px;">✅ 2FA is Active</div>
+                        <div class="alert alert-success" style="font-size:13px;">
+                            Your account is protected. Each time you log in, a 6-digit OTP will be sent
+                            to <strong th:text="${user.email}"></strong>.
+                        </div>
+                    </div>
+
+                    <!-- Disable Card -->
+                    <div class="card" th:if="${user.totpEnabled}">
+                        <div class="card-title" style="margin-bottom:12px;">🚫 Disable 2FA</div>
+                        <p class="text-muted text-sm" style="margin-bottom:12px;">Enter your master password to disable
+                            two-factor authentication.</p>
+                        <form method="post" th:action="@{/security/2fa/disable}">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <input type="password" id="mp" name="masterPassword" class="form-control"
+                                        placeholder="Master password" required />
+                                    <button type="button" class="toggle-pw" onclick="togglePw('mp',this)">👁️</button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-danger">Disable 2FA</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function togglePw(id, btn) {
+            const i = document.getElementById(id);
+            i.type = i.type === 'password' ? 'text' : 'password';
+            btn.textContent = i.type === 'password' ? '👁️' : '🙈';
+        }
+    </script>
+    <div th:replace="~{layout :: scripts}"></div>
+</body>
+
+</html>

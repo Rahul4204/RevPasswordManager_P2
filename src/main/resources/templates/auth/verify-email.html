@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verify Email | RevLock</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-primary);
+        }
+
+        .otp-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, .07);
+            text-align: center;
+        }
+
+        .otp-icon {
+            font-size: 52px;
+            margin-bottom: 16px;
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 24px 0;
+        }
+
+        .otp-inputs input {
+            width: 46px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .otp-inputs input:focus {
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-card fade-in">
+        <div class="otp-icon">📧</div>
+        <h1 style="font-size:22px; margin-bottom:8px;">Verify Your Email</h1>
+        <p class="text-muted text-sm" style="margin-bottom:20px;">
+            We sent a 6-digit code to your registered email address.<br />
+            Enter it below to verify your account.
+        </p>
+
+        <div th:if="${errorMsg}" class="alert alert-danger" th:text="${errorMsg}"></div>
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+        <form method="post" th:action="@{/auth/verify-email}" id="otpForm">
+            <div class="otp-inputs">
+                <input type="text" maxlength="1" class="otp-digit" id="d1" autocomplete="one-time-code" />
+                <input type="text" maxlength="1" class="otp-digit" id="d2" />
+                <input type="text" maxlength="1" class="otp-digit" id="d3" />
+                <input type="text" maxlength="1" class="otp-digit" id="d4" />
+                <input type="text" maxlength="1" class="otp-digit" id="d5" />
+                <input type="text" maxlength="1" class="otp-digit" id="d6" />
+            </div>
+            <input type="hidden" name="otp" id="otpHidden" />
+            <button type="submit" class="btn btn-primary" style="width:100%;">✅ Verify Email</button>
+        </form>
+
+        <p class="text-muted text-sm" style="margin-top:16px;">
+            Code expires in 10 minutes. &nbsp;
+            <a href="/register" style="color:var(--accent);">← Register again</a>
+        </p>
+    </div>
+    <script>
+        const digits = document.querySelectorAll('.otp-digit');
+        digits.forEach((d, i) => {
+            d.addEventListener('input', () => {
+                if (d.value && i < 5) digits[i + 1].focus();
+                combineOtp();
+            });
+            d.addEventListener('keydown', e => {
+                if (e.key === 'Backspace' && !d.value && i > 0) digits[i - 1].focus();
+            });
+        });
+        function combineOtp() {
+            document.getElementById('otpHidden').value =
+                [...digits].map(d => d.value).join('');
+        }
+        // Auto-focus first digit
+        digits[0].focus();
+    </script>
+</body>
+
+</html>

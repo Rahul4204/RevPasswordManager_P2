@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error | RevLock</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body
+    style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% -20%,rgba(239,68,68,.15) 0%,transparent 70%),var(--bg-primary);">
+    <div class="auth-card fade-in" style="text-align:center;">
+        <div style="font-size:60px;margin-bottom:16px;">❌</div>
+        <h1 style="font-size:24px;font-weight:700;margin-bottom:8px;"
+            th:text="${errorCode == '404'} ? 'Page Not Found' : (${errorCode == '403'} ? 'Access Denied' : 'Something Went Wrong')">
+            Error
+        </h1>
+        <p class="text-muted" style="margin-bottom:24px;"
+            th:text="${errorMessage ?: 'An unexpected error occurred. Please try again.'}">
+            Error message
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;">
+            <a href="/dashboard" class="btn btn-primary">🏠 Dashboard</a>
+            <a href="javascript:history.back()" class="btn btn-secondary">← Go Back</a>
+        </div>
+    </div>
+</body>
+
+</html>

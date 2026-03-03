@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recover Password | RevLock</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body data-page="recover">
+    <div class="auth-wrapper">
+        <div class="auth-card fade-in">
+            <div class="auth-logo">
+                <div class="logo-icon" style="background:transparent;box-shadow:none;">
+                    <img src="/images/logo.png" style="width: 100%; height: 100%; object-fit: contain;" alt="Logo" />
+                </div><span class="logo-text">RevLock</span>
+            </div>
+            <h1 class="auth-title">Recover Password</h1>
+            <p class="auth-subtitle">Enter your account username or email to begin</p>
+
+            <div th:if="${errorMsg}" class="alert alert-danger">❌ <span th:text="${errorMsg}"></span></div>
+
+            <form method="post" th:action="@{/recover/questions}">
+                <div class="form-group">
+                    <label class="form-label">Username or Email</label>
+                    <input type="text" name="usernameOrEmail" class="form-control"
+                        placeholder="Enter your username or email" autofocus required />
+                </div>
+                <button type="submit" class="btn btn-primary w-full mt-4" style="justify-content:center;">
+                    🔍 Find Account
+                </button>
+            </form>
+            <div class="mt-4" style="text-align:center; font-size:13px; color:var(--text-secondary);">
+                <a href="/login" style="color:var(--accent-light); text-decoration:none;">← Back to login</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
