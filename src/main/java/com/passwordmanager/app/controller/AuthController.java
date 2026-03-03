@@ -37,6 +37,11 @@ public class AuthController {
         this.verificationService = verificationService;
     }
 
+    @GetMapping("/")
+    public String indexPage() {
+        return "index";
+    }
+
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error,
             @RequestParam(required = false) String logout,

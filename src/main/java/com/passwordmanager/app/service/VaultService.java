@@ -8,14 +8,20 @@ import com.passwordmanager.app.repository.IVaultEntryRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class VaultService implements IVaultService {
 
+    private static final Logger logger = LogManager.getLogger(VaultService.class);
+
     private final IVaultEntryRepository vaultRepo;
     private final IEncryptionService encryptionService;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm");
 
     public VaultService(IVaultEntryRepository vaultRepo, IEncryptionService encryptionService) {
         this.vaultRepo = vaultRepo;
@@ -24,6 +30,7 @@ public class VaultService implements IVaultService {
 
     @Override
     public VaultEntry addEntry(User user, VaultEntryDTO dto) {
+        logger.info("Adding new vault entry for user ID: {}", user.getId());
         VaultEntry entry = VaultEntry.builder()
                 .user(user)
                 .accountName(dto.getAccountName())
@@ -34,13 +41,19 @@ public class VaultService implements IVaultService {
                 .encryptedPassword(encryptionService.encrypt(dto.getPassword()))
                 .favorite(false)
                 .build();
-        return vaultRepo.save(entry);
+        VaultEntry saved = vaultRepo.save(entry);
+        logger.debug("Successfully saved vault entry ID: {} for user ID: {}", saved.getId(), user.getId());
+        return saved;
     }
 
     @Override
     public VaultEntry updateEntry(Long userId, Long entryId, VaultEntryDTO dto) {
+        logger.info("Updating vault entry ID: {} for user ID: {}", entryId, userId);
         VaultEntry entry = vaultRepo.findByIdAndUserId(entryId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Vault entry ID: {} not found for user ID: {}", entryId, userId);
+                    return new ResourceNotFoundException("Entry not found");
+                });
         entry.setAccountName(dto.getAccountName());
         entry.setAccountUsername(dto.getAccountUsername());
         entry.setWebsiteUrl(dto.getWebsiteUrl());
@@ -54,13 +67,19 @@ public class VaultService implements IVaultService {
 
     @Override
     public void deleteEntry(Long userId, Long entryId) {
+        logger.info("Deleting vault entry ID: {} for user ID: {}", entryId, userId);
         VaultEntry entry = vaultRepo.findByIdAndUserId(entryId, userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Vault entry ID: {} not found for deletion by user ID: {}", entryId, userId);
+                    return new ResourceNotFoundException("Entry not found");
+                });
         vaultRepo.delete(entry);
+        logger.debug("Successfully deleted vault entry ID: {}", entryId);
     }
 
     @Override
     public void toggleFavorite(Long userId, Long entryId) {
+        logger.info("Toggling favorite status for vault entry ID: {} and user ID: {}", entryId, userId);
         VaultEntry entry = vaultRepo.findByIdAndUserId(entryId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Entry not found"));
         entry.setFavorite(!entry.isFavorite());
@@ -69,6 +88,8 @@ public class VaultService implements IVaultService {
 
     @Override
     public List<VaultEntryDTO> getAllEntries(Long userId, String search, String category, String sort) {
+        logger.debug("Retrieving all vault entries for user ID: {} [search='{}', category='{}', sort='{}']", userId,
+                search, category, sort);
         List<VaultEntry> entries;
         if (search != null && !search.isEmpty()) {
             entries = vaultRepo.search(userId, search);
@@ -151,6 +172,14 @@ public class VaultService implements IVaultService {
         dto.setCategory(e.getCategory());
         dto.setNotes(e.getNotes());
         dto.setFavorite(e.isFavorite());
+
+        if (e.getCreatedAt() != null) {
+            dto.setCreatedAt(e.getCreatedAt().format(DATE_FORMATTER));
+        }
+        if (e.getUpdatedAt() != null) {
+            dto.setUpdatedAt(e.getUpdatedAt().format(DATE_FORMATTER));
+        }
+
         return dto;
     }
 }

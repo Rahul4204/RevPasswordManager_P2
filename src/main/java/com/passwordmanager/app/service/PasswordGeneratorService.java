@@ -7,9 +7,13 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class PasswordGeneratorService implements IPasswordGeneratorService {
+
+    private static final Logger logger = LogManager.getLogger(PasswordGeneratorService.class);
 
     private static final String UPPER = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // excludes O, I by default (similar chars)
     private static final String UPPER_FULL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -24,6 +28,7 @@ public class PasswordGeneratorService implements IPasswordGeneratorService {
 
     @Override
     public List<String> generate(PasswordGeneratorConfigDTO config) {
+        logger.debug("Generating {} password(s) with length {}", config.getCount(), config.getLength());
         List<String> passwords = new ArrayList<>();
         int count = config.getCount() > 0 ? config.getCount() : 1;
 

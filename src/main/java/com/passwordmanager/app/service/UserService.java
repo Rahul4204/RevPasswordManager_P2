@@ -18,9 +18,13 @@ import java.util.stream.Collectors;
 import com.passwordmanager.app.entity.SecurityQuestion;
 import java.security.SecureRandom;
 import java.util.Base64;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class UserService implements IUserService {
+
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     private final IUserRepository userRepository;
     private final ISecurityQuestionRepository sqRepository;
@@ -51,6 +55,7 @@ public class UserService implements IUserService {
 
     @Override
     public User register(RegisterDTO dto) {
+        logger.info("Starting registration process for user: {}", dto.getUsername());
         preValidateRegistration(dto);
         User user = User.builder()
                 .username(dto.getUsername())
@@ -74,6 +79,7 @@ public class UserService implements IUserService {
             sqRepository.saveAll(questions);
         }
 
+        logger.info("Successfully registered user: {}", saved.getUsername());
         return saved;
     }
 
@@ -89,6 +95,7 @@ public class UserService implements IUserService {
 
     @Override
     public User updateProfile(Long userId, ProfileUpdateDTO dto) {
+        logger.info("Attempting to update profile for user ID: {}", userId);
         User user = userRepository.findById(userId).orElseThrow();
         user.setFullName(dto.getFullName());
         user.setPhone(dto.getPhone());
@@ -98,14 +105,18 @@ public class UserService implements IUserService {
                 throw new ValidationException("Email already in use");
             }
             user.setPendingEmail(dto.getEmail());
+            logger.info("User ID: {} requested email change to {}", userId, dto.getEmail());
         }
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        logger.info("Successfully updated profile for user ID: {}", userId);
+        return saved;
     }
 
     @Override
     public void confirmEmailChange(Long userId, String otp) {
         User user = userRepository.findById(userId).orElseThrow();
         if (user.getPendingEmail() != null) {
+            logger.info("User ID: {} confirmed new email address: {}", userId, user.getPendingEmail());
             user.setEmail(user.getPendingEmail());
             user.setPendingEmail(null);
             user.setEmailVerified(true);
@@ -122,8 +133,10 @@ public class UserService implements IUserService {
 
     @Override
     public void changeMasterPassword(Long userId, ChangePasswordDTO dto) {
+        logger.info("Attempting to change master password for user ID: {}", userId);
         User user = userRepository.findById(userId).orElseThrow();
         if (!verifyMasterPassword(user, dto.getCurrentPassword())) {
+            logger.warn("Incorrect current password provided during master password change for user ID: {}", userId);
             throw new InvalidCredentialsException("Incorrect old password");
         }
         if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
@@ -131,10 +144,12 @@ public class UserService implements IUserService {
         }
         user.setMasterPasswordHash(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
+        logger.info("Successfully changed master password for user ID: {}", userId);
     }
 
     @Override
     public void toggle2FA(Long userId, boolean enable) {
+        logger.info("Toggling 2FA for user ID: {} to {}", userId, enable);
         User user = userRepository.findById(userId).orElseThrow();
         user.setTotpEnabled(enable);
         if (enable) {
@@ -154,11 +169,14 @@ public class UserService implements IUserService {
 
     @Override
     public void deleteAccount(Long userId, String masterPassword) {
+        logger.info("Attempting to delete account for user ID: {}", userId);
         User user = userRepository.findById(userId).orElseThrow();
         if (!verifyMasterPassword(user, masterPassword)) {
+            logger.warn("Incorrect master password provided during account deletion for user ID: {}", userId);
             throw new RuntimeException("Incorrect master password");
         }
         userRepository.delete(user);
+        logger.info("Successfully deleted account for user ID: {}", userId);
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.passwordmanager.app.dto.RegisterDTO;
 import com.passwordmanager.app.entity.User;
 import com.passwordmanager.app.service.UserService;
 import com.passwordmanager.app.util.JwtUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthRestController {
+
+    private static final Logger logger = LogManager.getLogger(AuthRestController.class);
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
@@ -38,6 +42,7 @@ public class AuthRestController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody LoginDTO dto) {
+        logger.info("REST API login attempt for user: {}", dto.getUsernameOrEmail());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsernameOrEmail(), dto.getMasterPassword()));
         String username = authentication.getName();
@@ -47,12 +52,15 @@ public class AuthRestController {
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
         response.put("message", "Login successful");
+        logger.info("REST API login successful for user: {}", username);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterDTO dto) {
+        logger.info("REST API registration attempt for user: {}", dto.getUsername());
         User user = userService.register(dto);
+        logger.info("REST API registration successful for user: {}", user.getUsername());
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Registration successful");

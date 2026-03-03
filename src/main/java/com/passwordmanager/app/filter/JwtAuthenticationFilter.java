@@ -14,9 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LogManager.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
@@ -48,8 +52,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                // Token parse failed, could be expired or malformed
+                logger.warn("JWT Token parsing failed or token is expired", e);
             }
+        } else if (authHeader != null) {
+            logger.debug("Authorization header present but does not start with Bearer");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -60,6 +66,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.debug("Successfully authenticated JWT for user: {}", username);
+            } else {
+                logger.warn("JWT Token validation failed for user: {}", username);
             }
         }
 

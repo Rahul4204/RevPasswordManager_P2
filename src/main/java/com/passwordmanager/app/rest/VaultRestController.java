@@ -4,6 +4,8 @@ import com.passwordmanager.app.dto.VaultEntryDTO;
 import com.passwordmanager.app.entity.User;
 import com.passwordmanager.app.service.VaultService;
 import com.passwordmanager.app.util.AuthUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/vault")
 public class VaultRestController {
+
+    private static final Logger logger = LogManager.getLogger(VaultRestController.class);
 
     private final VaultService vaultService;
     private final AuthUtil authUtil;
@@ -37,6 +41,8 @@ public class VaultRestController {
     @PostMapping
     public ResponseEntity<Map<String, String>> addEntry(@RequestBody VaultEntryDTO dto) {
         User user = authUtil.getCurrentUser();
+        logger.info("REST API: User {} adding new vault entry for account: {}", user.getUsername(),
+                dto.getAccountName());
         vaultService.addEntry(user, dto);
 
         Map<String, String> response = new HashMap<>();
@@ -47,6 +53,7 @@ public class VaultRestController {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> updateEntry(@PathVariable Long id, @RequestBody VaultEntryDTO dto) {
         User user = authUtil.getCurrentUser();
+        logger.info("REST API: User {} updating vault entry ID: {}", user.getUsername(), id);
         vaultService.updateEntry(user.getId(), id, dto);
 
         Map<String, String> response = new HashMap<>();
@@ -57,6 +64,7 @@ public class VaultRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteEntry(@PathVariable Long id) {
         User user = authUtil.getCurrentUser();
+        logger.info("REST API: User {} deleting vault entry ID: {}", user.getUsername(), id);
         vaultService.deleteEntry(user.getId(), id);
 
         Map<String, String> response = new HashMap<>();
@@ -67,6 +75,7 @@ public class VaultRestController {
     @PostMapping("/{id}/favorite")
     public ResponseEntity<Map<String, String>> toggleFavorite(@PathVariable Long id) {
         User user = authUtil.getCurrentUser();
+        logger.info("REST API: User {} toggling favorite for vault entry ID: {}", user.getUsername(), id);
         vaultService.toggleFavorite(user.getId(), id);
 
         Map<String, String> response = new HashMap<>();

@@ -47,6 +47,8 @@ public class PasswordGeneratorController {
 
     @PostMapping
     public String generate(@ModelAttribute("config") PasswordGeneratorConfigDTO config, Model model) {
+        logger.info("Generating password(s) [length={}, includeUppercase={}, includeNumbers={}, includeSymbols={}]",
+                config.getLength(), config.isIncludeUppercase(), config.isIncludeNumbers(), config.isIncludeSymbols());
         List<String> passwords = generatorService.generate(config);
         List<com.passwordmanager.app.dto.PasswordResultDTO> results = passwords.stream()
                 .map(pw -> {
@@ -70,7 +72,10 @@ public class PasswordGeneratorController {
             @RequestParam String masterPassword,
             RedirectAttributes redirectAttrs) {
         User user = authUtil.getCurrentUser();
+        logger.info("User {} attempting to save generated password for account: {}", user.getUsername(), accountName);
         if (!userService.verifyMasterPassword(user, masterPassword)) {
+            logger.warn("User {} failed master password verification while saving generated password",
+                    user.getUsername());
             redirectAttrs.addFlashAttribute("errorMsg", "Incorrect master password");
             return "redirect:/generator";
         }
@@ -79,6 +84,8 @@ public class PasswordGeneratorController {
         dto.setPassword(password);
         dto.setCategory(VaultEntry.Category.OTHER);
         vaultService.addEntry(user, dto);
+        logger.info("Successfully saved generated password to vault for user {}, account: {}", user.getUsername(),
+                accountName);
         redirectAttrs.addFlashAttribute("successMsg", "Password saved to vault!");
         return "redirect:/vault";
     }

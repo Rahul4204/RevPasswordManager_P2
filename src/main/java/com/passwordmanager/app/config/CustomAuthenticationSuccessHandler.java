@@ -10,12 +10,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.Optional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+    private static final Logger logger = LogManager.getLogger(CustomAuthenticationSuccessHandler.class);
 
     private final IUserRepository userRepository;
 
@@ -37,8 +40,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             HttpSession session = request.getSession(true);
             session.setAttribute("pending2faUserId", user.getId());
             SecurityContextHolder.clearContext();
+            logger.info("User {} has 2FA enabled. Redirecting to 2FA verification.", username);
             response.sendRedirect("/auth/2fa-login");
         } else {
+            logger.info("User {} logged in successfully. Redirecting to dashboard.", username);
             response.sendRedirect("/dashboard");
         }
     }

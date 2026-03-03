@@ -9,9 +9,13 @@ import java.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Service
 public class EncryptionService implements IEncryptionService {
+
+    private static final Logger logger = LogManager.getLogger(EncryptionService.class);
 
     @Value("${app.encryption.secret:12345678901234567890123456789012}")
     private String secret;
@@ -33,6 +37,7 @@ public class EncryptionService implements IEncryptionService {
             byte[] encrypted = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(encrypted);
         } catch (Exception e) {
+            logger.error("Encryption failed", e);
             throw new RuntimeException("Encryption failed", e);
         }
     }
@@ -45,6 +50,7 @@ public class EncryptionService implements IEncryptionService {
             byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(cipherText));
             return new String(decrypted, StandardCharsets.UTF_8);
         } catch (Exception e) {
+            logger.error("Decryption failed", e);
             throw new RuntimeException("Decryption failed", e);
         }
     }

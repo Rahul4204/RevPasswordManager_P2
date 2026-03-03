@@ -18,53 +18,53 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final CustomAuthenticationSuccessHandler successHandler;
+        private final UserDetailsServiceImpl userDetailsService;
+        private final JwtAuthenticationFilter jwtAuthFilter;
+        private final CustomAuthenticationSuccessHandler successHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthFilter,
-            CustomAuthenticationSuccessHandler successHandler) {
-        this.userDetailsService = userDetailsService;
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.successHandler = successHandler;
-    }
+        public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthFilter,
+                        CustomAuthenticationSuccessHandler successHandler) {
+                this.userDetailsService = userDetailsService;
+                this.jwtAuthFilter = jwtAuthFilter;
+                this.successHandler = successHandler;
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+                return authConfig.getAuthenticationManager();
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/", "/login", "/register",
-                                "/recover", "/recover/**",
-                                "/auth/**",
-                                "/css/**", "/js/**", "/images/**", "/webjars/**",
-                                "/api/auth/**")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .usernameParameter("usernameOrEmail")
-                        .passwordParameter("masterPassword")
-                        .successHandler(successHandler)
-                        .failureUrl("/login?error=true")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
-                        .permitAll())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http.csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(
+                                                                "/", "/login", "/register",
+                                                                "/recover", "/recover/**",
+                                                                "/auth/**",
+                                                                "/css/**", "/js/**", "/images/**", "/webjars/**",
+                                                                "/api/auth/**")
+                                                .permitAll()
+                                                .anyRequest().authenticated())
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .usernameParameter("usernameOrEmail")
+                                                .passwordParameter("masterPassword")
+                                                .successHandler(successHandler)
+                                                .failureUrl("/login?error=true")
+                                                .permitAll())
+                                .logout(logout -> logout
+                                                .logoutUrl("/logout")
+                                                .logoutSuccessUrl("/")
+                                                .permitAll())
+                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 }

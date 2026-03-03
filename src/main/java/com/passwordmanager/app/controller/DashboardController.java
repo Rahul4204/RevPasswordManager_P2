@@ -33,7 +33,7 @@ public class DashboardController {
         this.authUtil = authUtil;
     }
 
-    @GetMapping({ "/", "/dashboard" })
+    @GetMapping("/dashboard")
     public String dashboard(Model model) {
         User user = authUtil.getCurrentUser();
         if (user == null)
