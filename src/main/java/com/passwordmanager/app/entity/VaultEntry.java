@@ -40,10 +40,9 @@ public class VaultEntry {
     @Column(name = "encrypted_password", nullable = false, length = 500)
     private String encryptedPassword;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category", length = 30)
+    @Column(name = "category", length = 50)
     @Builder.Default
-    private Category category = Category.OTHER;
+    private String category = "Other";
 
     @Column(name = "notes", length = 1000)
     private String notes;
@@ -59,8 +58,4 @@ public class VaultEntry {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public enum Category {
-        SOCIAL_MEDIA, BANKING, EMAIL, SHOPPING, WORK, OTHER
-    }
 }

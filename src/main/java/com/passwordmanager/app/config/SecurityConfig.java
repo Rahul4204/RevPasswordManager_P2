@@ -21,12 +21,15 @@ public class SecurityConfig {
         private final UserDetailsServiceImpl userDetailsService;
         private final JwtAuthenticationFilter jwtAuthFilter;
         private final CustomAuthenticationSuccessHandler successHandler;
+        private final CustomAuthenticationFailureHandler failureHandler;
 
         public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthFilter,
-                        CustomAuthenticationSuccessHandler successHandler) {
+                        CustomAuthenticationSuccessHandler successHandler,
+                        CustomAuthenticationFailureHandler failureHandler) {
                 this.userDetailsService = userDetailsService;
                 this.jwtAuthFilter = jwtAuthFilter;
                 this.successHandler = successHandler;
+                this.failureHandler = failureHandler;
         }
 
         @Bean
@@ -46,7 +49,7 @@ public class SecurityConfig {
                                                 .requestMatchers(
                                                                 "/", "/login", "/register",
                                                                 "/recover", "/recover/**",
-                                                                "/auth/**",
+                                                                "/auth/**", "/error",
                                                                 "/css/**", "/js/**", "/images/**", "/webjars/**",
                                                                 "/api/auth/**")
                                                 .permitAll()
@@ -57,8 +60,9 @@ public class SecurityConfig {
                                                 .usernameParameter("usernameOrEmail")
                                                 .passwordParameter("masterPassword")
                                                 .successHandler(successHandler)
-                                                .failureUrl("/login?error=true")
+                                                .failureHandler(failureHandler)
                                                 .permitAll())
+
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .logoutSuccessUrl("/")

@@ -23,7 +23,7 @@
                     </select>
 
                     <button type="submit" class="btn btn-primary">Search</button>
-                    <a th:if="${search != null and !#strings.isEmpty(search)}" href="/vault"
+                    <a th:if="${search != null and !#strings.isEmpty(search)}" th:href="@{/vault}"
                         class="btn btn-secondary">Clear</a>
                 </form>
 
@@ -31,9 +31,8 @@
                 <div class="filter-chips mb-4" style="margin-bottom:16px;">
                     <a th:href="@{/vault(sort=${sort})}" class="filter-chip"
                         th:classappend="${category == 'ALL'} ? 'active'">All</a>
-                    <a th:each="cat : ${categories}" th:href="@{/vault(category=${cat.name()}, sort=${sort})}"
-                        class="filter-chip" th:classappend="${category == cat.name()} ? 'active'"
-                        th:text="${cat.name().replace('_',' ')}">Category</a>
+                    <a th:each="cat : ${categories}" th:href="@{/vault(category=${cat}, sort=${sort})}"
+                        class="filter-chip" th:classappend="${category == cat} ? 'active'" th:text="${cat}">Category</a>
                 </div>
 
                 <!-- Header Row -->
@@ -41,7 +40,7 @@
                     <span style="font-size:13px;color:var(--text-secondary);"
                         th:text="${entries.size()} + ' entries'"></span>
                     <div style="display:flex;gap:8px;align-items:center;">
-                        <a href="/vault/add" class="btn btn-primary btn-sm">➕ Add Password</a>
+                        <a th:href="@{/vault/add}" class="btn btn-primary btn-sm">➕ Add Password</a>
                     </div>
                 </div>
 
@@ -50,7 +49,7 @@
                     class="card fade-in">
                     <div style="font-size:50px;margin-bottom:12px;">🔒</div>
                     <p style="font-size:15px;margin-bottom:8px;">Your vault is empty</p>
-                    <a href="/vault/add" class="btn btn-primary">➕ Add your first password</a>
+                    <a th:href="@{/vault/add}" class="btn btn-primary">➕ Add your first password</a>
                 </div>
 
 
@@ -74,11 +73,11 @@
                                     <td>
                                         <div style="display:flex;align-items:center;gap:10px;">
                                             <!-- Category icon circle -->
-                                            <span th:switch="${entry.category?.name()}"
+                                            <span th:switch="${entry.category?.toUpperCase()}"
                                                 style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
                                                 <span th:case="'BANKING'" style="background:#1e3a5f33;">🏦</span>
                                                 <span th:case="'EMAIL'" style="background:#7c3aed33;">📧</span>
-                                                <span th:case="'SOCIAL_MEDIA'" style="background:#0369a133;">📱</span>
+                                                <span th:case="'SOCIAL MEDIA'" style="background:#0369a133;">📱</span>
                                                 <span th:case="'SHOPPING'" style="background:#b4530933;">🛒</span>
                                                 <span th:case="'WORK'" style="background:#065f4633;">💼</span>
                                                 <span th:case="*" style="background:#37415133;">🔑</span>
@@ -91,20 +90,21 @@
                                     <td class="text-muted text-sm" th:text="${entry.accountUsername}"></td>
                                     <!-- Coloured category badge -->
                                     <td>
-                                        <span th:switch="${entry.category?.name()}"
+                                        <span th:switch="${entry.category?.toUpperCase()}"
                                             style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600;">
                                             <span th:case="'BANKING'" style="background:#1e3a5f22;color:#60a5fa;">🏦
                                                 Banking</span>
                                             <span th:case="'EMAIL'" style="background:#7c3aed22;color:#c084fc;">📧
                                                 Email</span>
-                                            <span th:case="'SOCIAL_MEDIA'"
+                                            <span th:case="'SOCIAL MEDIA'"
                                                 style="background:#0369a122;color:#38bdf8;">📱 Social</span>
                                             <span th:case="'SHOPPING'" style="background:#b4530922;color:#f59e0b;">🛒
                                                 Shopping</span>
                                             <span th:case="'WORK'" style="background:#065f4622;color:#10b981;">💼
                                                 Work</span>
-                                            <span th:case="*" style="background:#37415122;color:#9ca3af;">🔑
-                                                Other</span>
+                                            <span th:case="*" style="background:#37415122;color:#9ca3af;">
+                                                <span th:text="'🔑 ' + ${entry.category}"></span>
+                                            </span>
                                         </span>
                                     </td>
                                     <td class="text-muted text-sm" th:text="${entry.updatedAt}"></td>

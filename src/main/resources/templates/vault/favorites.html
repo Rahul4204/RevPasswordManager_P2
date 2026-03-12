@@ -15,16 +15,24 @@
                     class="card fade-in">
                     <div style="font-size:50px;margin-bottom:12px;">⭐</div>
                     <p>No favorites yet. Star entries from the vault to see them here.</p>
-                    <a href="/vault" class="btn btn-primary mt-2">Go to Vault</a>
+                    <a th:href="@{/vault}" class="btn btn-primary mt-2">Go to Vault</a>
                 </div>
 
                 <div class="vault-grid fade-in" th:unless="${entries.empty}">
                     <div th:each="entry : ${entries}" style="position:relative;">
                         <a th:href="@{/vault/{id}(id=${entry.id})}" class="vault-card">
                             <div class="vault-card-header">
-                                <div class="vault-card-icon">⭐</div>
+                                <div class="vault-card-icon" th:switch="${entry.category?.toUpperCase()}">
+                                    <span th:case="'BANKING'">🏦</span>
+                                    <span th:case="'EMAIL'">📧</span>
+                                    <span th:case="'SOCIAL MEDIA'">📱</span>
+                                    <span th:case="'SHOPPING'">🛒</span>
+                                    <span th:case="'WORK'">💼</span>
+                                    <span th:case="*">🔑</span>
+                                </div>
                                 <span class="badge badge-purple" th:text="${entry.category}"></span>
                             </div>
+
                             <div class="vault-card-name" th:text="${entry.accountName}">Account</div>
                             <div class="vault-card-url text-muted" th:text="${entry.websiteUrl}"></div>
                             <div class="vault-card-user" th:text="${entry.accountUsername}"></div>

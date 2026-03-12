@@ -119,7 +119,7 @@
 
         <!-- ── LEFT: Illustration Panel ── -->
         <div class="auth-panel-left">
-            <img class="auth-illo" src="/images/auth-illustration.png" alt="Secure Vault Illustration" />
+            <img class="auth-illo" th:src="@{/images/auth-illustration.png}" alt="Secure Vault Illustration" />
             <div class="auth-panel-tagline">
                 Your passwords, encrypted &amp; safe.
                 <span>Military-grade AES-256 encryption for every credential.</span>
@@ -131,7 +131,8 @@
             <div class="auth-card fade-in">
                 <div class="auth-logo">
                     <div class="logo-icon" style="background:transparent;box-shadow:none;">
-                        <img src="/images/logo.png" style="width:100%;height:100%;object-fit:contain;" alt="Logo" />
+                        <img th:src="@{/images/logo.png}" style="width:100%;height:100%;object-fit:contain;"
+                            alt="Logo" />
                     </div>
                     <span class="logo-text">RevLock</span>
                 </div>
@@ -163,10 +164,10 @@
                 </form>
 
                 <div class="mt-4" style="text-align:center;font-size:13px;color:var(--text-secondary);">
-                    <a href="/recover" style="color:var(--accent-light);text-decoration:none;">Forgot master
+                    <a th:href="@{/recover}" style="color:var(--accent-light);text-decoration:none;">Forgot master
                         password?</a>
                     &nbsp;·&nbsp;
-                    <a href="/register" style="color:var(--accent-light);text-decoration:none;">Create account</a>
+                    <a th:href="@{/register}" style="color:var(--accent-light);text-decoration:none;">Create account</a>
                 </div>
             </div>
         </div>

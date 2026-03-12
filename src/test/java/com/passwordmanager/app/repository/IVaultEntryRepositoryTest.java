@@ -48,7 +48,7 @@ class IVaultEntryRepositoryTest {
                 .websiteUrl("https://amazon.com")
                 .accountUsername("user@amazon.com")
                 .encryptedPassword("enc1")
-                .category(VaultEntry.Category.SHOPPING)
+                .category("Shopping")
                 .favorite(true).build();
 
         entry2 = VaultEntry.builder()
@@ -56,7 +56,7 @@ class IVaultEntryRepositoryTest {
                 .websiteUrl("https://mail.google.com")
                 .accountUsername("user@gmail.com")
                 .encryptedPassword("enc2")
-                .category(VaultEntry.Category.EMAIL)
+                .category("Email")
                 .favorite(false).build();
 
         entry3 = VaultEntry.builder()
@@ -64,7 +64,7 @@ class IVaultEntryRepositoryTest {
                 .websiteUrl("https://hdfcbank.com")
                 .accountUsername("user123")
                 .encryptedPassword("enc3")
-                .category(VaultEntry.Category.BANKING)
+                .category("Banking")
                 .favorite(false).build();
     }
 
@@ -123,24 +123,24 @@ class IVaultEntryRepositoryTest {
     @Test
     @DisplayName("findByUserIdAndCategory — returns entries matching category")
     void findByUserIdAndCategory_filtersByCategory() {
-        when(vaultRepo.findByUserIdAndCategory(1L, VaultEntry.Category.EMAIL))
+        when(vaultRepo.findByUserIdAndCategory(1L, "Email"))
                 .thenReturn(List.of(entry2));
 
-        List<VaultEntry> result = vaultRepo.findByUserIdAndCategory(1L, VaultEntry.Category.EMAIL);
+        List<VaultEntry> result = vaultRepo.findByUserIdAndCategory(1L, "Email");
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getAccountName()).isEqualTo("Gmail");
-        verify(vaultRepo).findByUserIdAndCategory(1L, VaultEntry.Category.EMAIL);
+        verify(vaultRepo).findByUserIdAndCategory(1L, "Email");
     }
 
     @Test
     @DisplayName("findByUserIdAndCategory — returns empty for unmatched category")
     void findByUserIdAndCategory_noMatch_empty() {
-        when(vaultRepo.findByUserIdAndCategory(1L, VaultEntry.Category.WORK))
+        when(vaultRepo.findByUserIdAndCategory(1L, "Work"))
                 .thenReturn(List.of());
 
-        assertThat(vaultRepo.findByUserIdAndCategory(1L, VaultEntry.Category.WORK)).isEmpty();
-        verify(vaultRepo).findByUserIdAndCategory(1L, VaultEntry.Category.WORK);
+        assertThat(vaultRepo.findByUserIdAndCategory(1L, "Work")).isEmpty();
+        verify(vaultRepo).findByUserIdAndCategory(1L, "Work");
     }
 
     // ── search ────────────────────────────────────────────────────────────────

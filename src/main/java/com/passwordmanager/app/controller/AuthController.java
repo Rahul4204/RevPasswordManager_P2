@@ -47,8 +47,15 @@ public class AuthController {
             @RequestParam(required = false) String logout,
             @RequestParam(required = false) String expired,
             Model model) {
-        if (error != null)
-            model.addAttribute("loginError", "Invalid username/email or password");
+        if (error != null) {
+            if ("dbDown".equals(error)) {
+                model.addAttribute("loginError",
+                        "System is temporarily unavailable due to a database issue. Please try again later.");
+            } else {
+                model.addAttribute("loginError", "Invalid username/email or password");
+            }
+        }
+
         if (logout != null)
             model.addAttribute("logoutMsg", "You have been logged out successfully");
         if (expired != null)

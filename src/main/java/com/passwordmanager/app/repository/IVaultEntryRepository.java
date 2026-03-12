@@ -30,7 +30,7 @@ public interface IVaultEntryRepository extends JpaRepository<VaultEntry, Long> {
 
         List<VaultEntry> findByUserIdAndFavoriteTrueOrderByAccountNameAsc(Long userId);
 
-        List<VaultEntry> findByUserIdAndCategory(Long userId, VaultEntry.Category category);
+        List<VaultEntry> findByUserIdAndCategory(Long userId, String category);
 
         @Query("SELECT v FROM VaultEntry v WHERE v.user.id = :userId AND " +
                         "(LOWER(v.accountName) LIKE LOWER(CONCAT('%', :q, '%')) OR " +

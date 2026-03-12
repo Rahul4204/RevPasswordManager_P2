@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "p2",
+			"path": "."
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}

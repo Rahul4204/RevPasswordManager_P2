@@ -36,10 +36,10 @@ public class VaultService implements IVaultService {
                 .accountName(dto.getAccountName())
                 .accountUsername(dto.getAccountUsername())
                 .websiteUrl(dto.getWebsiteUrl())
-                .category(dto.getCategory() != null ? dto.getCategory() : VaultEntry.Category.OTHER)
+                .category(dto.getCategory() != null ? dto.getCategory() : "Other")
                 .notes(dto.getNotes())
                 .encryptedPassword(encryptionService.encrypt(dto.getPassword()))
-                .favorite(false)
+                .favorite(dto.isFavorite())
                 .build();
         VaultEntry saved = vaultRepo.save(entry);
         logger.debug("Successfully saved vault entry ID: {} for user ID: {}", saved.getId(), user.getId());
@@ -57,11 +57,12 @@ public class VaultService implements IVaultService {
         entry.setAccountName(dto.getAccountName());
         entry.setAccountUsername(dto.getAccountUsername());
         entry.setWebsiteUrl(dto.getWebsiteUrl());
-        entry.setCategory(dto.getCategory() != null ? dto.getCategory() : VaultEntry.Category.OTHER);
+        entry.setCategory(dto.getCategory() != null ? dto.getCategory() : "Other");
         entry.setNotes(dto.getNotes());
         if (dto.getPassword() != null && !dto.getPassword().isEmpty() && !dto.getPassword().equals("********")) {
             entry.setEncryptedPassword(encryptionService.encrypt(dto.getPassword()));
         }
+        entry.setFavorite(dto.isFavorite());
         return vaultRepo.save(entry);
     }
 
@@ -99,7 +100,7 @@ public class VaultService implements IVaultService {
 
         return entries.stream()
                 .filter(e -> category == null || category.equalsIgnoreCase("ALL")
-                        || category.equalsIgnoreCase(e.getCategory().name()))
+                        || category.equalsIgnoreCase(e.getCategory()))
                 .sorted((e1, e2) -> {
                     if ("recent".equalsIgnoreCase(sort)) {
                         return e2.getUpdatedAt() != null && e1.getUpdatedAt() != null

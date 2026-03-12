@@ -130,7 +130,7 @@
 
         <!-- ── LEFT: Illustration Panel ── -->
         <div class="auth-panel-left">
-            <img class="auth-illo" src="/images/register-illustration.png" alt="Secure Dashboard Illustration" />
+            <img class="auth-illo" th:src="@{/images/register-illustration.png}" alt="Secure Dashboard Illustration" />
             <div class="auth-panel-tagline">
                 Set up your secure digital vault.
                 <span>All credentials encrypted. Zero knowledge architecture.</span>
@@ -149,7 +149,7 @@
             <div class="auth-card fade-in" style="max-width:440px;">
                 <div class="auth-logo">
                     <div class="logo-icon" style="background:transparent;box-shadow:none;">
-                        <img src="/images/logo.png" style="width: 100%; height: 100%; object-fit: contain;"
+                        <img th:src="@{/images/logo.png}" style="width: 100%; height: 100%; object-fit: contain;"
                             alt="Logo" />
                     </div>
                     <span class="logo-text">RevLock</span>
@@ -260,7 +260,7 @@
 
                 <div class="mt-4" style="text-align:center; font-size:13px; color:var(--text-secondary);">
                     Already have an account?
-                    <a href="/login" style="color:var(--accent-light); text-decoration:none;">Sign in</a>
+                    <a th:href="@{/login}" style="color:var(--accent-light); text-decoration:none;">Sign in</a>
                 </div>
             </div><!-- /.auth-card -->
         </div><!-- /.auth-panel-right -->
