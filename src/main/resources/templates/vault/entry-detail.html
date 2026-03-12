@@ -17,13 +17,13 @@
                         <div class="card-header">
                             <div style="display:flex;align-items:center;gap:12px;">
                                 <!-- Category icon -->
-                                <div class="vault-card-icon" th:switch="${entry.category?.name()}"
+                                <div class="vault-card-icon" th:switch="${entry.category?.toUpperCase()}"
                                     style="width:48px;height:48px;font-size:22px;">
                                     <span th:case="'BANKING'"
                                         style="background:linear-gradient(135deg,#1e3a5f,#2563eb);">🏦</span>
                                     <span th:case="'EMAIL'"
                                         style="background:linear-gradient(135deg,#7c3aed,#a855f7);">📧</span>
-                                    <span th:case="'SOCIAL_MEDIA'"
+                                    <span th:case="'SOCIAL MEDIA'"
                                         style="background:linear-gradient(135deg,#0369a1,#38bdf8);">📱</span>
                                     <span th:case="'SHOPPING'"
                                         style="background:linear-gradient(135deg,#b45309,#f59e0b);">🛒</span>
@@ -35,19 +35,21 @@
                                 <div>
                                     <div class="card-title" th:text="${entry.accountName}">Account</div>
                                     <!-- Coloured category badge -->
-                                    <span th:switch="${entry.category?.name()}"
+                                    <span th:switch="${entry.category?.toUpperCase()}"
                                         style="font-size:11px;padding:3px 9px;border-radius:12px;font-weight:600;">
                                         <span th:case="'BANKING'" style="background:#1e3a5f22;color:#60a5fa;">🏦
                                             Banking</span>
                                         <span th:case="'EMAIL'" style="background:#7c3aed22;color:#c084fc;">📧
                                             Email</span>
-                                        <span th:case="'SOCIAL_MEDIA'" style="background:#0369a122;color:#38bdf8;">📱
+                                        <span th:case="'SOCIAL MEDIA'" style="background:#0369a122;color:#38bdf8;">📱
                                             Social Media</span>
                                         <span th:case="'SHOPPING'" style="background:#b4530922;color:#f59e0b;">🛒
                                             Shopping</span>
                                         <span th:case="'WORK'" style="background:#065f4622;color:#10b981;">💼
                                             Work</span>
-                                        <span th:case="*" style="background:#37415122;color:#9ca3af;">🔑 Other</span>
+                                        <span th:case="*" style="background:#37415122;color:#9ca3af;">
+                                            <span th:text="'🔑 ' + ${entry.category}"></span>
+                                        </span>
                                     </span>
                                     <span th:if="${entry.favorite}" class="badge badge-yellow"
                                         style="margin-left:4px;">⭐ Favorite</span>
@@ -137,7 +139,8 @@
                     <div th:if="${revealed}" class="card fade-in" style="width:300px;flex-shrink:0;">
                         <div class="card-title" style="margin-bottom:8px;color:var(--success);">✅ Password Revealed
                         </div>
-                        <a href="/vault" class="btn btn-secondary w-full" style="justify-content:center;">← Back to
+                        <a th:href="@{/vault}" class="btn btn-secondary w-full" style="justify-content:center;">← Back
+                            to
                             Vault</a>
                     </div>
                 </div>

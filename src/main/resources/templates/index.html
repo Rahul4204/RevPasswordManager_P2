@@ -8,7 +8,7 @@
         content="RevLock – A secure, open-source password manager featuring AES-256 encryption, a built-in password generator, and a clean modern interface. Keep your digital life protected." />
     <title>RevLock | Secure Password Manager</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}" />
-    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="icon" type="image/png" th:href="@{/images/logo.png}" />
     <style>
         /* ── Landing-page-only styles ─────────────────── */
 
@@ -464,18 +464,19 @@
 
     <!-- ══════════════ NAVBAR ══════════════ -->
     <header class="topbar" style="position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.7);">
-        <div class="sidebar-brand" style="padding: 0; border: none; text-decoration: none;" th:href="@{/}">
+        <a class="sidebar-brand" style="padding: 0; border: none; text-decoration: none;" th:href="@{/}">
             <div class="brand-icon" style="background: transparent; box-shadow: none;">
-                <img src="/images/logo.png" style="width:100%; height:100%; object-fit:contain;" alt="RevLock Logo" />
+                <img th:src="@{/images/logo.png}" style="width:100%; height:100%; object-fit:contain;"
+                    alt="RevLock Logo" />
             </div>
             <span class="brand-name">RevLock</span>
-        </div>
+        </a>
 
         <nav style="display:flex; align-items:center; gap:8px;">
             <a href="#features" class="btn btn-secondary btn-sm">Features</a>
             <a href="#how" class="btn btn-secondary btn-sm">How It Works</a>
-            <a href="/login" class="btn btn-secondary btn-sm" id="nav-login-btn">Sign In</a>
-            <a href="/register" class="btn btn-primary btn-sm" id="nav-register-btn"
+            <a th:href="@{/login}" class="btn btn-secondary btn-sm" id="nav-login-btn">Sign In</a>
+            <a th:href="@{/register}" class="btn btn-primary btn-sm" id="nav-register-btn"
                 style="box-shadow: 0 4px 14px var(--accent-glow);">Create Account</a>
         </nav>
     </header>
@@ -495,8 +496,8 @@
             </p>
 
             <div class="hero-cta">
-                <a href="/register" class="btn btn-primary" id="hero-create-btn">Get Started Free</a>
-                <a href="/login" class="btn btn-secondary" id="hero-login-btn">Sign In to Your Vault</a>
+                <a th:href="@{/register}" class="btn btn-primary" id="hero-create-btn">Get Started Free</a>
+                <a th:href="@{/login}" class="btn btn-secondary" id="hero-login-btn">Sign In to Your Vault</a>
             </div>
 
             <div class="trust-bar">
@@ -677,8 +678,8 @@
                     credentials safely. Already have an account? Sign back in.
                 </p>
                 <div class="cta-buttons">
-                    <a href="/register" class="btn btn-primary" id="cta-register-btn">Create Free Account</a>
-                    <a href="/login" class="btn btn-secondary" id="cta-login-btn">Sign In</a>
+                    <a th:href="@{/register}" class="btn btn-primary" id="cta-register-btn">Create Free Account</a>
+                    <a th:href="@{/login}" class="btn btn-secondary" id="cta-login-btn">Sign In</a>
                 </div>
             </div>
         </section>
@@ -689,7 +690,7 @@
     <footer class="landing-footer">
         <div class="footer-brand">
             <div style="width:26px; height:26px;">
-                <img src="/images/logo.png" style="width:100%; height:100%; object-fit:contain;" alt="Logo" />
+                <img th:src="@{/images/logo.png}" style="width:100%; height:100%; object-fit:contain;" alt="Logo" />
             </div>
             <span
                 style="font-weight:700; color:var(--text-primary); font-size:16px; letter-spacing:-0.5px;">RevLock</span>
@@ -703,8 +704,8 @@
             <a href="#">Terms of Service</a>
             <a href="#">Help Center</a>
             <a href="#">Contact Us</a>
-            <a href="/login">Sign In</a>
-            <a href="/register">Register</a>
+            <a th:href="@{/login}">Sign In</a>
+            <a th:href="@{/register}">Register</a>
         </div>
     </footer>
 

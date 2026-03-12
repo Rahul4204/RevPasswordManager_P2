@@ -36,24 +36,8 @@ public class VaultController {
         this.authUtil = authUtil;
     }
 
-    /** Force-convert category string → enum for all @ModelAttribute bindings */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(VaultEntry.Category.class, new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                if (text == null || text.isBlank()) {
-                    setValue(VaultEntry.Category.OTHER);
-                } else {
-                    try {
-                        setValue(VaultEntry.Category.valueOf(text.trim().toUpperCase()));
-                    } catch (IllegalArgumentException e) {
-                        setValue(VaultEntry.Category.OTHER);
-                    }
-                }
-            }
-        });
-    }
+    private static final List<String> PREDEFINED_CATEGORIES = List.of(
+            "Banking", "Email", "Social Media", "Shopping", "Work", "Other");
 
     @GetMapping
     public String vaultList(@RequestParam(required = false) String search,
@@ -67,7 +51,7 @@ public class VaultController {
         model.addAttribute("category", category != null ? category : "ALL");
         model.addAttribute("sort", sort);
 
-        model.addAttribute("categories", VaultEntry.Category.values());
+        model.addAttribute("categories", PREDEFINED_CATEGORIES);
         model.addAttribute("user", user);
         return "vault/vault";
     }
@@ -114,7 +98,7 @@ public class VaultController {
     public String addEntryPage(Model model) {
         User user = authUtil.getCurrentUser();
         model.addAttribute("entryDTO", new VaultEntryDTO());
-        model.addAttribute("categories", VaultEntry.Category.values());
+        model.addAttribute("categories", PREDEFINED_CATEGORIES);
         model.addAttribute("isEdit", false);
         model.addAttribute("user", user);
         return "vault/add-edit-entry";
@@ -132,7 +116,7 @@ public class VaultController {
         if (result.hasErrors()) {
             logger.warn("Validation failed adding vault entry for user {}", user.getUsername());
             model.addAttribute("entryDTO", dto);
-            model.addAttribute("categories", VaultEntry.Category.values());
+            model.addAttribute("categories", PREDEFINED_CATEGORIES);
             model.addAttribute("isEdit", false);
             model.addAttribute("user", user);
             return "vault/add-edit-entry";
@@ -141,7 +125,7 @@ public class VaultController {
             logger.warn("User {} failed master password verification to add vault entry", user.getUsername());
             model.addAttribute("entryDTO", dto);
             model.addAttribute("errorMsg", "Incorrect master password");
-            model.addAttribute("categories", VaultEntry.Category.values());
+            model.addAttribute("categories", PREDEFINED_CATEGORIES);
             model.addAttribute("isEdit", false);
             model.addAttribute("user", user);
             return "vault/add-edit-entry";
@@ -158,7 +142,7 @@ public class VaultController {
         User user = authUtil.getCurrentUser();
         VaultEntryDTO entry = vaultService.getEntryWithDecryptedPassword(user.getId(), id);
         model.addAttribute("entryDTO", entry);
-        model.addAttribute("categories", VaultEntry.Category.values());
+        model.addAttribute("categories", PREDEFINED_CATEGORIES);
         model.addAttribute("isEdit", true);
         model.addAttribute("user", user);
         return "vault/add-edit-entry";
@@ -176,7 +160,7 @@ public class VaultController {
         if (result.hasErrors()) {
             logger.warn("Validation failed editing vault entry ID {} for user {}", id, user.getUsername());
             model.addAttribute("entryDTO", dto);
-            model.addAttribute("categories", VaultEntry.Category.values());
+            model.addAttribute("categories", PREDEFINED_CATEGORIES);
             model.addAttribute("isEdit", true);
             model.addAttribute("user", user);
             return "vault/add-edit-entry";
@@ -186,7 +170,7 @@ public class VaultController {
                     id);
             model.addAttribute("entryDTO", dto);
             model.addAttribute("errorMsg", "Incorrect master password");
-            model.addAttribute("categories", VaultEntry.Category.values());
+            model.addAttribute("categories", PREDEFINED_CATEGORIES);
             model.addAttribute("isEdit", true);
             model.addAttribute("user", user);
             return "vault/add-edit-entry";

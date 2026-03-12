@@ -1,6 +1,5 @@
 package com.passwordmanager.app.dto;
 
-import com.passwordmanager.app.entity.VaultEntry;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -23,7 +22,7 @@ public class VaultEntryDTO {
     @NotBlank(message = "Password is required")
     private String password; // plain-text in DTO, encrypted before storage
 
-    private VaultEntry.Category category = VaultEntry.Category.OTHER;
+    private String category = "Other";
 
     @Size(max = 1000)
     private String notes;

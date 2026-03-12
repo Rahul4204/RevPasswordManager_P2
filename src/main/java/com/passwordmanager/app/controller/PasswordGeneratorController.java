@@ -82,7 +82,7 @@ public class PasswordGeneratorController {
         VaultEntryDTO dto = new VaultEntryDTO();
         dto.setAccountName(accountName);
         dto.setPassword(password);
-        dto.setCategory(VaultEntry.Category.OTHER);
+        dto.setCategory("Other");
         vaultService.addEntry(user, dto);
         logger.info("Successfully saved generated password to vault for user {}, account: {}", user.getUsername(),
                 accountName);

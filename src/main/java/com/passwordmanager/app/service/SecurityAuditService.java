@@ -100,7 +100,7 @@ public class SecurityAuditService implements ISecurityAuditService {
         AuditItem item = new AuditItem();
         item.setId(entry.getId());
         item.setAccountName(entry.getAccountName());
-        item.setCategory(entry.getCategory() != null ? entry.getCategory().name() : "OTHER");
+        item.setCategory(entry.getCategory() != null ? entry.getCategory() : "Other");
         item.setStrengthScore(score);
         item.setStrengthLabel(generatorService.strengthLabel(score));
         LocalDateTime ldt = entry.getUpdatedAt() != null ? entry.getUpdatedAt() : entry.getCreatedAt();

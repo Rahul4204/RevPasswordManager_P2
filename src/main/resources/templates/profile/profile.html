@@ -75,7 +75,7 @@
 
                             <div style="display:flex;gap:10px;margin-top:20px;">
                                 <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-                                <a href="/dashboard" class="btn btn-secondary">Cancel</a>
+                                <a th:href="@{/dashboard}" class="btn btn-secondary">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -85,9 +85,11 @@
                         <div class="card-title" style="color:var(--danger);margin-bottom:12px;">⚠️ Security Actions
                         </div>
                         <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                            <a href="/security/change-password" class="btn btn-secondary btn-sm">🔑 Change Password</a>
-                            <a href="/security/2fa" class="btn btn-secondary btn-sm">📱 Manage 2FA</a>
-                            <a href="/security/questions" class="btn btn-secondary btn-sm">❓ Security Questions</a>
+                            <a th:href="@{/security/change-password}" class="btn btn-secondary btn-sm">🔑 Change
+                                Password</a>
+                            <a th:href="@{/security/2fa}" class="btn btn-secondary btn-sm">📱 Manage 2FA</a>
+                            <a th:href="@{/security/questions}" class="btn btn-secondary btn-sm">❓ Security
+                                Questions</a>
                         </div>
                     </div>
 
@@ -95,7 +97,7 @@
                     <div class="card mt-4"
                         style="margin-top:16px;border-color:rgba(239,68,68,0.5);background:rgba(239,68,68,0.05);">
                         <div class="card-title" style="color:var(--danger);margin-bottom:12px;">🚨 Danger Zone</div>
-                        <a href="/profile/delete" class="btn btn-danger w-full">🗑️ Delete Account</a>
+                        <a th:href="@{/profile/delete}" class="btn btn-danger w-full">🗑️ Delete Account</a>
                     </div>
                 </div>
             </div>
